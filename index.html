@@ -79,6 +79,15 @@ header {
 .btn:active { transform: scale(0.95); }
 .btn-secondary { background: rgba(255,255,255,0.1); }
 .btn-share { background: var(--green); }
+.btn-danger {
+    background: #ef4444; /* Rouge vif */
+    color: white;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+.btn-danger:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+}
 
 /* --- MENU --- */
 .screen { display: none; animation: fadeIn 0.3s; }
@@ -442,6 +451,8 @@ textarea { width: 100%; height: 150px; background: rgba(0,0,0,0.3); color: white
                 </p>
                 <div style="display: flex; gap: 10px; justify-content: center; flex-wrap:wrap;">
                     <button class="btn btn-secondary" onclick="exportProfile()">📤 Sauvegarder (Fichier)</button>
+                    <!-- NOUVEAU BOUTON RESET -->
+    <button class="btn btn-danger" onclick="resetProfile()">🗑️ RAZ</button>
                     <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Charger</button>
                     <input type="file" id="importFile" style="display: none" accept=".json" onchange="importProfile(this)">
                 </div>
@@ -1716,6 +1727,35 @@ if(startWord) {
             };
             reader.readAsText(file);
         }
+
+        function resetProfile() {
+        // 1. Double confirmation pour éviter les accidents
+        if (!confirm("⚠️ ATTENTION ⚠️\n\nVous allez effacer TOUTE votre progression :\n- Niveau et XP\n- Tous les Succès\n- Toutes les statistiques\n\nCette action est irréversible.")) {
+            return;
+        }
+        
+        if (!confirm("Êtes-vous vraiment sûr de vouloir tout supprimer ?")) {
+            return;
+        }
+
+        // 2. Nettoyage ciblé du localStorage
+        // On ne supprime QUE les clés du jeu, pas les autres données du site
+        localStorage.removeItem('cw_xp');
+        localStorage.removeItem('cw_stats');
+        localStorage.removeItem('cw_streak');
+        localStorage.removeItem('cw_last');
+        localStorage.removeItem('cw_color_theme');
+        
+        // Optionnel : Supprimer aussi les sauvegardes des défis quotidiens si tu en as
+        // (Parcourir les clés qui commencent par cw_)
+        Object.keys(localStorage).forEach(key => {
+            if(key.startsWith('cw_')) localStorage.removeItem(key);
+        });
+
+        // 3. Feedback et Reload
+        alert("Profil effacé avec succès. Retour à la case départ !");
+        location.reload(); // Recharge la page pour tout remettre à zéro proprement
+    }
 
 
 
