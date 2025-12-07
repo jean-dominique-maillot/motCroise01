@@ -340,22 +340,24 @@
 }
 
         .crossword-grid {
-            display: grid;
-            /* grid-template-columns géré par JS */
-            gap: 1px;
-            background: #475569;
-            border: 2px solid #475569;
-            width: 100%;
-            max-width: 600px;
-            aspect-ratio: 1 / 1;
-        }
+    display: grid;
+    /* On laisse le JS définir grid-template-columns */
+    gap: 1px;
+    background: #475569;
+    border: 2px solid #475569;
+    width: 100%;
+    max-width: 600px;
+    /* On enlève aspect-ratio sur la grille globale pour éviter les déformations */
+    margin: 0 auto;
+}
 
-        .cell-container {
-            position: relative;
-            background: white;
-            width: 100%;
-            height: 100%;
-        }
+       .cell-container {
+    position: relative;
+    background: white;
+    width: 100%;
+    /* C'EST ICI LE SECRET : Force le carré parfait */
+    aspect-ratio: 1 / 1; 
+}
 
         .cell-container.blocked {
             background: #0f172a;
@@ -1155,12 +1157,15 @@
             gameState.mode = mode;
             gameState.score = 0;
             gameState.penalty = 0;
+            document.getElementById('timerContainer').style.display = 'block';
             document.getElementById('scoreDisplay').innerText = '0';
             // RECUPERER CONFIG DIFFICULTÉ
             const conf = DIFFICULTIES[currentDiff];
             const targetWords = conf.words;
 
             let words = data || [...PACKS[currentPack]];
+             gameState.activeCell = null; // Reset
+    document.getElementById('activeClueBar').classList.remove('visible'); // Cacher
 
             // Préparation de la liste de mots
             if (mode === 'daily') {
@@ -1294,7 +1299,7 @@
             container.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
             // ---------------------------
 
-
+            
             container.innerHTML = '';
             for (let r = 0; r < gridSize; r++) {
                 for (let c = 0; c < gridSize; c++) {
@@ -1302,13 +1307,14 @@
                     const div = document.createElement('div');
                     div.className = letter ? 'cell-container' : 'cell-container blocked';
                     if (letter) {
-                        const w = gameState.placed.find(x => x.r === r && x.c === c);
-                        if (w) {
-                            const num = document.createElement('span');
-                            num.className = 'cell-number';
-                            num.innerText = w.num;
-                            div.appendChild(num);
-                        }
+                        const startWord = gameState.placed.find(w => w.r === r && w.c === c);
+
+if(startWord) {
+    const numSpan = document.createElement('span');
+    numSpan.className = 'cell-number';
+    numSpan.innerText = startWord.num;
+    div.appendChild(numSpan);
+}
                         const input = document.createElement('input');
                         input.className = 'cell';
                         input.readOnly = true; // On garde readOnly pour éviter le clavier mobile natif
@@ -1659,46 +1665,41 @@
         }
 
         // --- STREAK & XP (CORRIGÉ) ---
-        function updateStreakLogic() {
-            // On utilise l'heure locale du joueur, pas UTC
+            function updateStreakLogic() {
+        try {
+            // Méthode universelle pour la date YYYY-MM-DD locale
             const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const today = `${year}-${month}-${day}`; // Format YYYY-MM-DD local
+            const offset = now.getTimezoneOffset() * 60000;
+            const localDate = new Date(now.getTime() - offset);
+            const today = localDate.toISOString().split('T')[0];
 
             const last = localStorage.getItem('cw_last');
             let streak = parseInt(localStorage.getItem('cw_streak') || 0);
 
-            // Calcul de la date d'hier pour vérifier la consécutivité
-            const d = new Date();
-            d.setDate(d.getDate() - 1);
-            const y_year = d.getFullYear();
-            const y_month = String(d.getMonth() + 1).padStart(2, '0');
-            const y_day = String(d.getDate()).padStart(2, '0');
-            const yesterday = `${y_year}-${y_month}-${y_day}`;
+            // Calcul d'hier (Universel)
+            const yesterdayDate = new Date(now);
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yOffset = yesterdayDate.getTimezoneOffset() * 60000;
+            const localYesterday = new Date(yesterdayDate.getTime() - yOffset);
+            const yesterday = localYesterday.toISOString().split('T')[0];
+
+            console.log("Streak Debug:", { today, last, yesterday, streak }); // Pour vérifier
 
             if (last !== today) {
                 if (last === yesterday) {
-                    // C'est consécutif : on incrémente
                     streak++;
-                    document.getElementById('streakBonus').innerText = `🔥 Série augmentée : ${streak} jours !`;
                 } else {
-                    // C'est raté (plus d'un jour d'écart) : on recommence à 1
                     streak = 1;
-                    document.getElementById('streakBonus').innerText = `🔥 Nouvelle série commencée !`;
                 }
-
-                // Sauvegarde immédiate
                 localStorage.setItem('cw_streak', streak);
                 localStorage.setItem('cw_last', today);
-            } else {
-                // Déjà joué aujourd'hui
-                document.getElementById('streakBonus').innerText = `🔥 Série du jour déjà validée !`;
             }
-
             updateStreakUI();
+        } catch (e) {
+            console.error("Erreur Streak:", e);
         }
+    }
+
 
         function updateStreakUI() {
             const streak = localStorage.getItem('cw_streak') || 0;
@@ -1733,7 +1734,17 @@
                 `${progressInLevel} / ${totalForLevel} <span style="color:var(--primary)">(-${xpNeeded})</span>`;
         }
         function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-        function goToMenu() { showScreen('screen-menu'); }
+        function goToMenu() {
+    showScreen('screen-menu');
+    document.getElementById('timerContainer').style.display = 'none';
+    
+    // AJOUT : Cacher la bulle
+    const clueBar = document.getElementById('activeClueBar');
+    if(clueBar) clueBar.classList.remove('visible');
+    
+    // AJOUT : Reset sélection
+    gameState.activeCell = null;
+}
         function showAdmin() { showScreen('screen-admin'); }
         function closeModal() { document.getElementById('victoryModal').style.display = 'none'; goToMenu(); }
         function loadCustom() {
