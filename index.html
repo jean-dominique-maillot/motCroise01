@@ -129,18 +129,40 @@ header {
 }
 
 .crossword-grid {
-    display: grid; gap: 1px;
-    background: #475569; border: 2px solid #475569;
-    /* Largeur min sur mobile pour lisibilité */
+    display: grid;
+    /* On enlève gap et background qui causaient le problème */
+    gap: 0; 
+    background: transparent;
+    
+    /* On crée le cadre extérieur (Haut et Gauche) */
+    border: 2px solid #475569;
+    
+    /* Responsive sizing */
     min-width: 350px; 
     max-width: 600px;
     margin: 0 auto;
+    
+    /* Pour éviter tout dépassement d'ombre */
+    box-shadow: none;
 }
 @media (min-width: 600px) { .crossword-grid { width: 100%; min-width: auto; } }
 
-.cell-container { position: relative; background: white; width: 100%; aspect-ratio: 1 / 1; }
-.cell-container.blocked { background: #0f172a; }
-
+.cell-container {
+    position: relative;
+    background: white;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    
+    /* CHAQUE CELLULE DESSINE SES BORDS DROIT ET BAS */
+    border-right: 1px solid #475569;
+    border-bottom: 1px solid #475569;
+}
+/* Cas particulier : Case noire (blocked) */
+.cell-container.blocked {
+    background: #0f172a; /* Fond sombre */
+    /* On garde les bordures pour la structure, ou on les change si on veut fondre */
+    border-color: #1e293b; 
+}
 .cell {
     width: 100%; height: 100%; border: none; background: white;
     text-align: center; font-weight: 800; color: #1e293b;
