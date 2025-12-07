@@ -11,566 +11,1315 @@
     <style>
         /* --- VARIABLES & RESET --- */
         /* --- VARIABLES & RESET --- */
-:root {
-    --primary: #6366f1;
-    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-    --glass: rgba(255, 255, 255, 0.05);
-    --border: rgba(255, 255, 255, 0.1);
-    --text: #f8fafc;
-    --green: #22c55e;
-}
+        :root {
+            --primary: #6366f1;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+            --green: #22c55e;
+        }
 
-* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background: var(--bg-gradient);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-    padding-bottom: env(safe-area-inset-bottom);
-}
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
 
-/* --- STRUCTURE PRINCIPALE --- */
-.app-container {
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 15px;
-    padding-bottom: 250px; /* Espace clavier mobile */
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-}
+        /* --- STRUCTURE PRINCIPALE --- */
+        .app-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            padding-bottom: 250px;
+            /* Espace clavier mobile */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-/* --- HEADER --- */
-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 20px; gap: 15px;
-}
-.logo h1 { font-size: 1.5rem; font-weight: 800; }
-.logo span { color: var(--primary); opacity: 0.8; font-weight: 300; }
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
 
-.stats-bar {
-    display: flex; gap: 15px; font-size: 0.9rem; align-items: center; 
-    padding: 8px 15px; background: var(--glass); 
-    border: 1px solid var(--border); border-radius: 12px;
-}
-.xp-track { width: 80px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
-.xp-fill { height: 100%; background: var(--green); width: 0%; transition: width 0.5s; }
-.xp-details { font-size: 0.7rem; opacity: 0.8; text-align: right; font-family: monospace; min-width: 80px; }
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
 
-@media (max-width: 600px) {
-    header { flex-direction: column; align-items: stretch; text-align: center; }
-    .stats-bar { justify-content: space-between; }
-}
+        .logo span {
+            color: var(--primary);
+            opacity: 0.8;
+            font-weight: 300;
+        }
 
-/* --- UI COMMON --- */
-.glass-panel {
-    background: var(--glass); backdrop-filter: blur(12px);
-    border: 1px solid var(--border); border-radius: 16px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-}
-.btn {
-    background: var(--primary); color: white; border: none;
-    padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 1rem;
-    cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    min-height: 44px; transition: transform 0.1s;
-}
-.btn:active { transform: scale(0.95); }
-.btn-secondary { background: rgba(255,255,255,0.1); }
-.btn-share { background: var(--green); }
-.btn-danger {
-    background: #ef4444; /* Rouge vif */
-    color: white;
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-}
-.btn-danger:hover {
-    background: #dc2626;
-    transform: translateY(-2px);
-}
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            align-items: center;
+            padding: 8px 15px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
 
-/* --- MENU --- */
-.screen { display: none; animation: fadeIn 0.3s; }
-.screen.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .xp-track {
+            width: 80px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
 
-.menu-box { max-width: 600px; margin: 20px auto; padding: 25px; text-align: center; }
-.menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
-.menu-btn {
-    padding: 20px; text-align: left; background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border); border-radius: 12px;
-    display: flex; align-items: center; gap: 15px; color: white; cursor: pointer;
-    transition: 0.2s;
-}
-.menu-btn:hover { background: var(--primary); border-color: var(--primary); transform: translateY(-2px); }
-.menu-icon { font-size: 2rem; }
+        .xp-fill {
+            height: 100%;
+            background: var(--green);
+            width: 0%;
+            transition: width 0.5s;
+        }
 
-/* Custom Selectors */
-.theme-picker { display: flex; gap: 10px; justify-content: center; margin: 15px auto; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 50px; width: fit-content; }
-.theme-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.2); position: relative; transition: 0.3s; }
-.theme-dot.active { border-color: white; transform: scale(1.1); box-shadow: 0 0 10px var(--primary); }
-.theme-dot.active::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.7rem; }
+        .xp-details {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            text-align: right;
+            font-family: monospace;
+            min-width: 80px;
+        }
 
-.theme-selector { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; -webkit-overflow-scrolling: touch; }
-.theme-chip { padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.1); border: 1px solid var(--border); cursor: pointer; white-space: nowrap; flex-shrink: 0; }
-.theme-chip.active { background: var(--primary); border-color: var(--primary); font-weight: bold; }
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
 
-.diff-selector { display: flex; background: rgba(0,0,0,0.3); border-radius: 50px; padding: 4px; margin: 15px auto; width: fit-content; }
-.diff-btn { padding: 8px 20px; border-radius: 40px; cursor: pointer; font-size: 0.9rem; opacity: 0.7; }
-.diff-btn.active { background: var(--primary); color: white; opacity: 1; font-weight: bold; }
+            .stats-bar {
+                justify-content: space-between;
+            }
+        }
 
-/* --- JEU & GRILLE (VERSION MOBILE CORRIGÉE) --- */
-.game-layout { display: flex; flex-direction: column; gap: 20px; width: 100%; }
+        /* --- UI COMMON --- */
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
 
-@media (min-width: 900px) {
-    .game-layout { flex-direction: row; align-items: start; height: calc(100vh - 140px); }
-    .grid-wrapper { flex: 2; height: 100%; display: flex; align-items: center; justify-content: center; }
-    .defs-panel { flex: 1; height: 100%; }
-}
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 44px;
+            transition: transform 0.1s;
+        }
 
-.grid-wrapper {
-    width: 100%; overflow: auto; -webkit-overflow-scrolling: touch;
-    padding: 0; padding-bottom: 20px;
-    display: flex; justify-content: center; align-items: flex-start;
-}
-@media (max-width: 600px) {
-    .grid-wrapper { display: block; justify-content: flex-start; } /* Permet scroll horizontal natif */
-}
+        .btn:active {
+            transform: scale(0.95);
+        }
 
-.crossword-grid {
-    display: grid;
-    /* On enlève gap et background qui causaient le problème */
-    gap: 0; 
-    background: transparent;
-    
-    /* On crée le cadre extérieur (Haut et Gauche) */
-    border: 2px solid #475569;
-    
-    /* Responsive sizing */
-    min-width: 350px; 
-    max-width: 600px;
-    margin: 0 auto;
-    
-    /* Pour éviter tout dépassement d'ombre */
-    box-shadow: none;
-}
-@media (min-width: 600px) { .crossword-grid { width: 100%; min-width: auto; } }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
 
-.cell-container {
-    position: relative;
-    background: white;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    
-    /* CHAQUE CELLULE DESSINE SES BORDS DROIT ET BAS */
-    border-right: 1px solid #475569;
-    border-bottom: 1px solid #475569;
-}
-/* Cas particulier : Case noire (blocked) */
-.cell-container.blocked {
-    background: #0f172a; /* Fond sombre */
-    /* On garde les bordures pour la structure, ou on les change si on veut fondre */
-    border-color: #1e293b; 
-}
-.cell {
-    width: 100%; height: 100%; border: none; background: white;
-    text-align: center; font-weight: 800; color: #1e293b;
-    padding: 0; margin: 0;
-    font-size: 14px; /* Fixe sur mobile pour éviter zoom */
-    position: relative; z-index: 1; text-transform: uppercase;
-}
-@media (min-width: 600px) { .cell { font-size: clamp(12px, 2.5vw, 22px); } }
+        .btn-share {
+            background: var(--green);
+        }
 
-.cell:focus { background: #e0e7ff; outline: none; }
-.cell.correct { background: #dcfce7; }
-.cell.incorrect { background: #fee2e2; color: #ef4444; }
-.word-completed { animation: pop 0.4s ease; background: #86efac !important; }
+        .btn-danger {
+            background: #ef4444;
+            /* Rouge vif */
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
 
-.cell-number {
-    position: absolute; top: 1px; left: 1px;
-    font-size: 9px;
-    color: var(--primary); font-weight: 900; z-index: 5; pointer-events: none;
-}
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
 
-/* --- BULLE STICKY (MOBILE) --- */
-.active-clue-bar {
-    position: sticky; top: 0; z-index: 100;
-    background: var(--primary); color: white;
-    padding: 10px 15px; border-radius: 8px; margin-bottom: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-weight: 600; font-size: 0.95rem;
-    display: none; animation: slideDown 0.3s ease;
-}
-.active-clue-bar.visible { display: block; }
-@keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* Style pour le bouton Défi validé */
+        .menu-btn.completed {
+            background: rgba(34, 197, 94, 0.2);
+            /* Vert transparent */
+            border: 1px solid var(--green);
+            color: var(--green);
+            pointer-events: none;
+            /* Optionnel : empêche de rejouer si tu veux bloquer */
+            opacity: 0.8;
+        }
 
-/* --- DÉFINITIONS (PC) --- */
-.defs-panel { display: flex; flex-direction: column; max-height: 300px; }
-@media (min-width: 900px) { .defs-panel { max-height: 100%; } }
+        .menu-btn.completed h3 {
+            color: var(--green);
+        }
 
-.defs-tabs { display: flex; border-bottom: 1px solid var(--border); }
-.tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; opacity: 0.5; background: rgba(0,0,0,0.2); }
-.tab.active { opacity: 1; background: transparent; border-bottom: 2px solid var(--primary); color: var(--primary); font-weight: bold; }
-.def-list { flex: 1; overflow-y: auto; padding: 10px; }
-.def-item { padding: 12px; background: rgba(255,255,255,0.03); margin-bottom: 6px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; border-left: 3px solid transparent; }
-.def-item.highlight { background: rgba(99,102,241,0.2); border-left-color: var(--primary); }
+        /* --- MENU --- */
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
 
-/* --- CLAVIER VIRTUEL --- */
-.keyboard-container {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(10px);
-    border-top: 1px solid var(--border); padding: 5px; z-index: 1000;
-    padding-bottom: max(10px, env(safe-area-inset-bottom));
-    display: none;
-}
-@media (max-width: 900px) { .keyboard-container { display: block; } }
+        .screen.active {
+            display: block;
+        }
 
-.kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 4px; }
-.kb-key {
-    flex: 1; height: 44px; max-width: 10%;
-    background: rgba(255,255,255,0.15); border: none; border-radius: 6px;
-    color: white; font-size: 1.1rem; font-weight: bold; touch-action: manipulation;
-}
-.kb-key:active { background: var(--primary); transform: scale(0.95); }
-.kb-key.wide { max-width: 15%; font-size: 0.9rem; }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
 
-/* --- SUCCÈS (DESIGN METAL & PAILLETTES) --- */
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.stat-box { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; text-align: center; }
-.stat-val { font-size: 1.5rem; font-weight: bold; color: var(--primary); display:block; }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-.achievements-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; padding: 15px; }
+        .menu-box {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 25px;
+            text-align: center;
+        }
 
-.achievement-card {
-    background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px;
-    border: 1px solid var(--border); display: flex; gap: 15px; align-items: center;
-    opacity: 0.6; filter: grayscale(1); transition: 0.3s; position: relative; overflow: hidden;
-}
-.achievement-card .ach-icon, .achievement-card .ach-info, .achievement-card div:last-child { position: relative; z-index: 2; }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
 
-/* UNLOCKED */
-.achievement-card.unlocked { opacity: 1; filter: grayscale(0); transform: scale(1.02); border: 2px solid white; color: #000; text-shadow: 0 1px 0 rgba(255,255,255,0.4); box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
-.achievement-card.unlocked h4 { margin: 0; font-weight: 900; color: #000; }
-.achievement-card.unlocked p { margin: 0; font-size: 0.85rem; font-weight: 700; color: #333; }
+        .menu-btn {
+            padding: 20px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
 
-/* PAILLETTES */
-.achievement-card.unlocked::after {
-    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
-    background-image: radial-gradient(circle, white 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px);
-    background-size: 30px 30px, 15px 15px; mix-blend-mode: overlay; opacity: 0.7; pointer-events: none;
-    animation: sparkle-anim 3s infinite linear;
-}
+        .menu-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
 
-/* TIERS COULEURS */
-.achievement-card[data-tier="bronze"].unlocked { background-image: linear-gradient(45deg, #5D4037, #8D6E63, #D7CCC8, #8D6E63, #5D4037); background-size: 200% 200%; border-color: #D7CCC8; animation: metal-move 6s ease infinite; }
-.achievement-card[data-tier="silver"].unlocked { background-image: linear-gradient(45deg, #546E7A, #90A4AE, #FFFFFF, #90A4AE, #546E7A); background-size: 200% 200%; border-color: #FFFFFF; animation: metal-move 5s ease infinite; }
-.achievement-card[data-tier="gold"].unlocked { background: linear-gradient(45deg, #B8860B, #FFD700, #FFFFFF, #FFD700, #B8860B) !important; background-size: 200% 200% !important; border-color: #FFD700 !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.6) !important; animation: metal-move 3s ease infinite !important; }
-.achievement-card[data-tier="platinum"].unlocked { background-image: linear-gradient(45deg, #37474F, #B0BEC5, #FFFFFF, #B0BEC5, #37474F); background-size: 200% 200%; border-color: #E0F7FA; box-shadow: 0 0 20px rgba(255, 255, 255, 0.7); animation: metal-move 3s ease infinite; }
+        .menu-icon {
+            font-size: 2rem;
+        }
 
-@keyframes metal-move { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-@keyframes sparkle-anim { 0% { transform: translateY(0); opacity: 0.5; } 50% { transform: translateY(-3px); opacity: 0.9; } 100% { transform: translateY(0); opacity: 0.5; } }
+        /* Custom Selectors */
+        .theme-picker {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px auto;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50px;
+            width: fit-content;
+        }
 
-/* --- ADMIN & UTILS --- */
-textarea { width: 100%; height: 150px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--border); margin: 10px 0; border-radius: 8px; padding: 10px; }
-.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 2000; }
-.modal-content { width: 90%; max-width: 400px; padding: 30px; text-align: center; }
-.score-big { font-size: 3rem; font-weight: 800; color: var(--green); margin: 20px 0; }
-.toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; }
-.toast { background: #0f172a; border: 2px solid var(--green); padding: 15px 20px; border-radius: 12px; display: flex; gap: 15px; align-items: center; margin-bottom: 10px; animation: slideIn 0.5s, fadeOut 0.5s 3s forwards; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .theme-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            transition: 0.3s;
+        }
 
+        .theme-dot.active {
+            border-color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .theme-dot.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.7rem;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .theme-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .theme-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            font-weight: bold;
+        }
+
+        .diff-selector {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50px;
+            padding: 4px;
+            margin: 15px auto;
+            width: fit-content;
+        }
+
+        .diff-btn {
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .diff-btn.active {
+            background: var(--primary);
+            color: white;
+            opacity: 1;
+            font-weight: bold;
+        }
+
+        /* --- JEU & GRILLE (VERSION MOBILE CORRIGÉE) --- */
+        .game-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        @media (min-width: 900px) {
+            .game-layout {
+                flex-direction: row;
+                align-items: start;
+                height: calc(100vh - 140px);
+            }
+
+            .grid-wrapper {
+                flex: 2;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .defs-panel {
+                flex: 1;
+                height: 100%;
+            }
+        }
+
+        .grid-wrapper {
+            width: 100%;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 0;
+            padding-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 600px) {
+            .grid-wrapper {
+                display: block;
+                justify-content: flex-start;
+            }
+
+            /* Permet scroll horizontal natif */
+        }
+
+        .crossword-grid {
+            display: grid;
+            /* On enlève gap et background qui causaient le problème */
+            gap: 0;
+            background: transparent;
+
+            /* On crée le cadre extérieur (Haut et Gauche) */
+            border: 2px solid #475569;
+
+            /* Responsive sizing */
+            min-width: 350px;
+            max-width: 600px;
+            margin: 0 auto;
+
+            /* Pour éviter tout dépassement d'ombre */
+            box-shadow: none;
+        }
+
+        @media (min-width: 600px) {
+            .crossword-grid {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+
+        .cell-container {
+            position: relative;
+            background: white;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+
+            /* CHAQUE CELLULE DESSINE SES BORDS DROIT ET BAS */
+            border-right: 1px solid #475569;
+            border-bottom: 1px solid #475569;
+        }
+
+        /* Cas particulier : Case noire (blocked) */
+        .cell-container.blocked {
+            background: #0f172a;
+            /* Fond sombre */
+            /* On garde les bordures pour la structure, ou on les change si on veut fondre */
+            border-color: #1e293b;
+        }
+
+        .cell {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+            text-align: center;
+            font-weight: 800;
+            color: #1e293b;
+            padding: 0;
+            margin: 0;
+            font-size: 14px;
+            /* Fixe sur mobile pour éviter zoom */
+            position: relative;
+            z-index: 1;
+            text-transform: uppercase;
+        }
+
+        @media (min-width: 600px) {
+            .cell {
+                font-size: clamp(12px, 2.5vw, 22px);
+            }
+        }
+
+        .cell:focus {
+            background: #e0e7ff;
+            outline: none;
+        }
+
+        .cell.correct {
+            background: #dcfce7;
+        }
+
+        .cell.incorrect {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .word-completed {
+            animation: pop 0.4s ease;
+            background: #86efac !important;
+        }
+
+        .cell-number {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            font-size: 9px;
+            color: var(--primary);
+            font-weight: 900;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* --- BULLE STICKY (MOBILE) --- */
+        .active-clue-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .active-clue-bar.visible {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* --- DÉFINITIONS (PC) --- */
+        .defs-panel {
+            display: flex;
+            flex-direction: column;
+            max-height: 300px;
+        }
+
+        @media (min-width: 900px) {
+            .defs-panel {
+                max-height: 100%;
+            }
+        }
+
+        .defs-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            opacity: 0.5;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .tab.active {
+            opacity: 1;
+            background: transparent;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .def-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .def-item {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            margin-bottom: 6px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .def-item.highlight {
+            background: rgba(99, 102, 241, 0.2);
+            border-left-color: var(--primary);
+        }
+
+        /* --- CLAVIER VIRTUEL --- */
+        .keyboard-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
+            padding: 5px;
+            z-index: 1000;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .keyboard-container {
+                display: block;
+            }
+        }
+
+        .kb-row {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+            margin-bottom: 4px;
+        }
+
+        .kb-key {
+            flex: 1;
+            height: 44px;
+            max-width: 10%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            touch-action: manipulation;
+        }
+
+        .kb-key:active {
+            background: var(--primary);
+            transform: scale(0.95);
+        }
+
+        .kb-key.wide {
+            max-width: 15%;
+            font-size: 0.9rem;
+        }
+
+        /* --- SUCCÈS (DESIGN METAL & PAILLETTES) --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: block;
+        }
+
+        .achievements-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            opacity: 0.6;
+            filter: grayscale(1);
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card .ach-icon,
+        .achievement-card .ach-info,
+        .achievement-card div:last-child {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* UNLOCKED */
+        .achievement-card.unlocked {
+            opacity: 1;
+            filter: grayscale(0);
+            transform: scale(1.02);
+            border: 2px solid white;
+            color: #000;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .achievement-card.unlocked h4 {
+            margin: 0;
+            font-weight: 900;
+            color: #000;
+        }
+
+        .achievement-card.unlocked p {
+            margin: 0;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* PAILLETTES */
+        .achievement-card.unlocked::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background-image: radial-gradient(circle, white 1px, transparent 1px), radial-gradient(circle, rgba(255, 255, 255, 0.8) 1px, transparent 1px);
+            background-size: 30px 30px, 15px 15px;
+            mix-blend-mode: overlay;
+            opacity: 0.7;
+            pointer-events: none;
+            animation: sparkle-anim 3s infinite linear;
+        }
+
+        /* TIERS COULEURS */
+        .achievement-card[data-tier="bronze"].unlocked {
+            background-image: linear-gradient(45deg, #5D4037, #8D6E63, #D7CCC8, #8D6E63, #5D4037);
+            background-size: 200% 200%;
+            border-color: #D7CCC8;
+            animation: metal-move 6s ease infinite;
+        }
+
+        .achievement-card[data-tier="silver"].unlocked {
+            background-image: linear-gradient(45deg, #546E7A, #90A4AE, #FFFFFF, #90A4AE, #546E7A);
+            background-size: 200% 200%;
+            border-color: #FFFFFF;
+            animation: metal-move 5s ease infinite;
+        }
+
+        /* --- OR : EFFET MÉTALLIQUE FORCÉ --- */
+        .achievement-card[data-tier="gold"].unlocked {
+            /* 1. Dégradé très contrasté (Marron -> Or -> Blanc -> Or -> Marron) */
+            background-image: linear-gradient(110deg,
+                    #8a6e2f 0%,
+                    #eec130 25%,
+                    #ffffff 50%,
+                    #eec130 75%,
+                    #8a6e2f 100%) !important;
+
+            /* 2. Taille plus grande que la carte pour permettre le mouvement */
+            background-size: 200% 100% !important;
+
+            /* 3. Bordure brillante */
+            border: 2px solid #ffd700 !important;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
+
+            /* 4. Animation rapide et continue */
+            animation: shine-move 6s linear infinite !important;
+        }
+
+        .achievement-card[data-tier="platinum"].unlocked {
+            background-image: linear-gradient(45deg, #37474F, #B0BEC5, #FFFFFF, #B0BEC5, #37474F);
+            background-size: 200% 200%;
+            border-color: #E0F7FA;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+            animation: metal-move 3s ease infinite;
+        }
+
+        @keyframes metal-move {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes sparkle-anim {
+            0% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: translateY(-3px);
+                opacity: 0.9;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes shine-move {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* --- ADMIN & UTILS --- */
+        textarea {
+            width: 100%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            border: 1px solid var(--border);
+            margin: 10px 0;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .score-big {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--green);
+            margin: 20px 0;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: #0f172a;
+            border: 2px solid var(--green);
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            pointer-events: auto;
+
+            /* Animation propre */
+            animation: slideIn 0.5s ease-out, fadeOut 0.5s ease-in 4s forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
     </style>
 </head>
 
 <body>
 
     <div class="app-container">
-    <!-- HEADER -->
-    <header>
-        <div class="logo">
-            <h1>CrossWord<span>Gen</span></h1>
-        </div>
-        <div class="stats-bar glass-panel">
-            <div style="margin-right:10px; font-weight:bold;">🔥 <span id="streakDisplay">0</span></div>
-            
-            <div style="display:flex; flex-direction:column; align-items:end;">
-                <div style="display:flex; align-items:center; width:100%">
-                    <span style="margin-right:8px; font-size:0.8rem;">Niv. <span id="lvlDisplay">1</span></span>
-                    <div class="xp-track">
-                        <div id="xpFill" class="xp-fill"></div>
+        <!-- HEADER -->
+        <header>
+            <div class="logo">
+                <h1>CrossWord<span>Gen</span></h1>
+            </div>
+            <div class="stats-bar glass-panel">
+                <div style="margin-right:10px; font-weight:bold;">🔥 <span id="streakDisplay">0</span></div>
+
+                <div style="display:flex; flex-direction:column; align-items:end;">
+                    <div style="display:flex; align-items:center; width:100%">
+                        <span style="margin-right:8px; font-size:0.8rem;">Niv. <span id="lvlDisplay">1</span></span>
+                        <div class="xp-track">
+                            <div id="xpFill" class="xp-fill"></div>
+                        </div>
+                    </div>
+                    <div id="xpText" class="xp-details">0 / 500</div>
+                </div>
+            </div>
+            <!-- Chrono (visible en jeu) -->
+            <div id="timerContainer" class="glass-panel"
+                style="display:none; padding:5px 12px; font-family:monospace; font-weight:bold;">
+                ⏱️ <span id="timerDisplay">00:00</span>
+            </div>
+        </header>
+
+        <!-- MENU PRINCIPAL -->
+        <div id="screen-menu" class="screen active">
+            <div class="menu-box glass-panel">
+                <h2>Menu Principal</h2>
+
+                <!-- Personnalisation -->
+                <div style="margin: 20px 0;">
+                    <p style="font-size:0.8rem; opacity:0.6; margin-bottom:8px;">🎨 Thème & Ambiance</p>
+                    <div class="theme-picker" id="themeContainer">
+                        <!-- Généré par JS -->
                     </div>
                 </div>
-                <div id="xpText" class="xp-details">0 / 500</div>
+
+                <!-- Difficulté -->
+                <div style="margin: 20px 0;">
+                    <label style="font-size:0.8rem; opacity:0.7">Difficulté :</label>
+                    <div class="diff-selector" id="diffSelector">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+
+                <!-- Choix du pack de mots -->
+                <div style="text-align:left; margin-bottom:10px;">
+                    <label style="font-size:0.9rem; color:#94a3b8; margin-left:5px;">Sujet :</label>
+                    <div class="theme-selector" id="themeSelector">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+
+                <!-- Boutons Actions -->
+                <div class="menu-grid">
+                    <div id="btn-daily" class="menu-btn" onclick="startGame('daily')">
+                        <span class="menu-icon">📅</span>
+                        <div>
+                            <h3>Défi du Jour</h3>
+                            <small style="opacity:0.7">Grille unique mondiale</small>
+                        </div>
+                    </div>
+                    <div class="menu-btn" onclick="startGame('random')">
+                        <span class="menu-icon">🎲</span>
+                        <div>
+                            <h3>Partie Rapide</h3>
+                            <small style="opacity:0.7">Entraînement infini</small>
+                        </div>
+                    </div>
+                    <div class="menu-btn" onclick="showProfile()">
+                        <span class="menu-icon">🏆</span>
+                        <div>
+                            <h3>Profil & Succès</h3>
+                            <small style="opacity:0.7">Stats, Badges, Sauvegarde</small>
+                        </div>
+                    </div>
+                    <div class="menu-btn" onclick="showAdmin()">
+                        <span class="menu-icon">🛠️</span>
+                        <div>
+                            <h3>Créateur</h3>
+                            <small style="opacity:0.7">Créer une grille</small>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <!-- Chrono (visible en jeu) -->
-        <div id="timerContainer" class="glass-panel" style="display:none; padding:5px 12px; font-family:monospace; font-weight:bold;">
-            ⏱️ <span id="timerDisplay">00:00</span>
-        </div>
-    </header>
 
-    <!-- MENU PRINCIPAL -->
-    <div id="screen-menu" class="screen active">
-        <div class="menu-box glass-panel">
-            <h2>Menu Principal</h2>
-            
-            <!-- Personnalisation -->
-            <div style="margin: 20px 0;">
-                <p style="font-size:0.8rem; opacity:0.6; margin-bottom:8px;">🎨 Thème & Ambiance</p>
-                <div class="theme-picker" id="themeContainer">
+        <!-- ECRAN JEU -->
+        <div id="screen-game" class="screen">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                <button class="btn btn-secondary" onclick="goToMenu()">⬅ Menu</button>
+
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-secondary" onclick="useHint()" title="-50 pts">💡 Indice</button>
+                    <button class="btn btn-share" onclick="shareThisGame()">🔗 Défier</button>
+                    <div class="glass-panel"
+                        style="padding:8px 15px; font-weight:bold; display:flex; align-items:center;">
+                        Score: <span id="scoreDisplay" style="margin-left:5px; color:var(--green);">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bulle de définition active (Nouveau) -->
+            <div id="activeClueBar" class="active-clue-bar">
+                <span id="activeClueText">Sélectionnez une case...</span>
+            </div>
+
+
+            <div class="game-layout">
+                <div class="grid-wrapper">
+                    <div id="gameGrid" class="crossword-grid"></div>
+                </div>
+
+                <div class="defs-panel glass-panel">
+                    <div class="defs-tabs">
+                        <div class="tab active" onclick="switchTab('horizontal')">Horizontal</div>
+                        <div class="tab" onclick="switchTab('vertical')">Vertical</div>
+                    </div>
+                    <div id="defList" class="def-list"></div>
+                </div>
+            </div>
+
+            <!-- Clavier Virtuel (Mobile) -->
+            <div id="virtual-keyboard" class="keyboard-container"></div>
+        </div>
+
+        <!-- ECRAN PROFIL -->
+        <div id="screen-profile" class="screen">
+            <div class="menu-box glass-panel" style="max-width:800px">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2>Mon Profil</h2>
+                    <button class="btn btn-secondary" onclick="goToMenu()">Fermer</button>
+                </div>
+
+                <!-- Stats Grid (IDs corrigés pour le JS) -->
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-val" id="statGames">0</span>
+                        <span style="font-size:0.8rem; opacity:0.7">Parties</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-val" id="statWords">0</span>
+                        <span style="font-size:0.8rem; opacity:0.7">Mots</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-val" id="statBestTime">-</span>
+                        <span style="font-size:0.8rem; opacity:0.7">Record</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-val" id="statPerfect">0</span>
+                        <span style="font-size:0.8rem; opacity:0.7">Parfaites</span>
+                    </div>
+                </div>
+
+                <h3
+                    style="margin:20px 0 10px 0; border-top:1px solid var(--border); padding-top:20px; text-align:left;">
+                    Succès Débloqués
+                </h3>
+                <div id="achievementsList" class="achievements-list">
                     <!-- Généré par JS -->
                 </div>
-            </div>
 
-            <!-- Difficulté -->
-            <div style="margin: 20px 0;">
-                <label style="font-size:0.8rem; opacity:0.7">Difficulté :</label>
-                <div class="diff-selector" id="diffSelector">
-                    <!-- Généré par JS -->
-                </div>
-            </div>
-
-            <!-- Choix du pack de mots -->
-            <div style="text-align:left; margin-bottom:10px;">
-                <label style="font-size:0.9rem; color:#94a3b8; margin-left:5px;">Sujet :</label>
-                <div class="theme-selector" id="themeSelector">
-                    <!-- Généré par JS -->
-                </div>
-            </div>
-
-            <!-- Boutons Actions -->
-            <div class="menu-grid">
-                <div class="menu-btn" onclick="startGame('daily')">
-                    <span class="menu-icon">📅</span>
-                    <div>
-                        <h3>Défi du Jour</h3>
-                        <small style="opacity:0.7">Grille unique mondiale</small>
-                    </div>
-                </div>
-                <div class="menu-btn" onclick="startGame('random')">
-                    <span class="menu-icon">🎲</span>
-                    <div>
-                        <h3>Partie Rapide</h3>
-                        <small style="opacity:0.7">Entraînement infini</small>
-                    </div>
-                </div>
-                <div class="menu-btn" onclick="showProfile()">
-                    <span class="menu-icon">🏆</span>
-                    <div>
-                        <h3>Profil & Succès</h3>
-                        <small style="opacity:0.7">Stats, Badges, Sauvegarde</small>
-                    </div>
-                </div>
-                <div class="menu-btn" onclick="showAdmin()">
-                    <span class="menu-icon">🛠️</span>
-                    <div>
-                        <h3>Créateur</h3>
-                        <small style="opacity:0.7">Créer une grille</small>
+                <!-- Sauvegarde & Import -->
+                <div style="margin-top: 30px; background:rgba(0,0,0,0.2); padding:15px; border-radius:12px;">
+                    <h4 style="margin-bottom: 10px;">☁️ Sauvegarde & Synchro</h4>
+                    <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 15px;">
+                        Gardez votre progression en changeant d'appareil.
+                    </p>
+                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap:wrap;">
+                        <button class="btn btn-secondary" onclick="exportProfile()">📤 Sauvegarder (Fichier)</button>
+                        <!-- NOUVEAU BOUTON RESET -->
+                        <button class="btn btn-danger" onclick="resetProfile()">🗑️ RAZ</button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥
+                            Charger</button>
+                        <input type="file" id="importFile" style="display: none" accept=".json"
+                            onchange="importProfile(this)">
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- ECRAN JEU -->
-    <div id="screen-game" class="screen">
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-            <button class="btn btn-secondary" onclick="goToMenu()">⬅ Menu</button>
-            
-            <div style="display:flex; gap:10px;">
-                <button class="btn btn-secondary" onclick="useHint()" title="-50 pts">💡 Indice</button>
-                <button class="btn btn-share" onclick="shareThisGame()">🔗 Défier</button>
-                <div class="glass-panel" style="padding:8px 15px; font-weight:bold; display:flex; align-items:center;">
-                    Score: <span id="scoreDisplay" style="margin-left:5px; color:var(--green);">0</span>
+        <!-- ECRAN ADMIN (CRÉATEUR) -->
+        <div id="screen-admin" class="screen">
+            <div class="menu-box glass-panel">
+                <h2>Créateur de Grille</h2>
+                <p style="font-size:0.8rem; opacity:0.7; margin-bottom:10px;">Collez votre JSON ci-dessous :</p>
+                <textarea id="jsonInput"
+                    placeholder='[&#10;  {"mot":"CHAT", "definition":"Animal"},&#10;  {"mot":"CHIEN", "definition":"Aboye"}&#10;]'></textarea>
+
+                <div style="display:grid; gap:10px; grid-template-columns: 1fr 1fr;">
+                    <button class="btn" onclick="loadCustom()">🎮 Tester</button>
+                    <button class="btn btn-secondary" onclick="goToMenu()">Retour</button>
+                </div>
+                <button class="btn btn-share" style="width:100%; margin-top:10px;" onclick="shareUrl()">🔗 Copier le
+                    Lien de Partage</button>
+            </div>
+        </div>
+
+        <!-- MODAL VICTOIRE -->
+        <div id="victoryModal" class="modal">
+            <div class="modal-content glass-panel">
+                <div style="font-size:3rem;">🎉</div>
+                <h2>Victoire !</h2>
+                <div id="finalScore" class="score-big">+100 XP</div>
+                <p id="streakBonus" style="color:#fbbf24; font-weight:bold; margin-bottom:20px;"></p>
+
+                <div style="display:flex; gap:10px; justify-content:center;">
+                    <button class="btn" onclick="closeModal()">Continuer</button>
+                    <button class="btn btn-share" onclick="shareEmoji()">Partager 📱</button>
                 </div>
             </div>
         </div>
 
-        <!-- Bulle de définition active (Nouveau) -->
-<div id="activeClueBar" class="active-clue-bar">
-    <span id="activeClueText">Sélectionnez une case...</span>
-</div>
-
-
-        <div class="game-layout">
-            <div class="grid-wrapper">
-                <div id="gameGrid" class="crossword-grid"></div>
-            </div>
-            
-            <div class="defs-panel glass-panel">
-                <div class="defs-tabs">
-                    <div class="tab active" onclick="switchTab('horizontal')">Horizontal</div>
-                    <div class="tab" onclick="switchTab('vertical')">Vertical</div>
-                </div>
-                <div id="defList" class="def-list"></div>
-            </div>
-        </div>
-        
-        <!-- Clavier Virtuel (Mobile) -->
-        <div id="virtual-keyboard" class="keyboard-container"></div>
+        <!-- TOASTS (NOTIFICATIONS SUCCÈS) -->
+        <div id="toastContainer" class="toast-container"></div>
     </div>
-
-    <!-- ECRAN PROFIL -->
-    <div id="screen-profile" class="screen">
-        <div class="menu-box glass-panel" style="max-width:800px">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2>Mon Profil</h2>
-                <button class="btn btn-secondary" onclick="goToMenu()">Fermer</button>
-            </div>
-
-            <!-- Stats Grid (IDs corrigés pour le JS) -->
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <span class="stat-val" id="statGames">0</span>
-                    <span style="font-size:0.8rem; opacity:0.7">Parties</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-val" id="statWords">0</span>
-                    <span style="font-size:0.8rem; opacity:0.7">Mots</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-val" id="statBestTime">-</span>
-                    <span style="font-size:0.8rem; opacity:0.7">Record</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-val" id="statPerfect">0</span>
-                    <span style="font-size:0.8rem; opacity:0.7">Parfaites</span>
-                </div>
-            </div>
-
-            <h3 style="margin:20px 0 10px 0; border-top:1px solid var(--border); padding-top:20px; text-align:left;">
-                Succès Débloqués
-            </h3>
-            <div id="achievementsList" class="achievements-list">
-                <!-- Généré par JS -->
-            </div>
-
-            <!-- Sauvegarde & Import -->
-            <div style="margin-top: 30px; background:rgba(0,0,0,0.2); padding:15px; border-radius:12px;">
-                <h4 style="margin-bottom: 10px;">☁️ Sauvegarde & Synchro</h4>
-                <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 15px;">
-                    Gardez votre progression en changeant d'appareil.
-                </p>
-                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap:wrap;">
-                    <button class="btn btn-secondary" onclick="exportProfile()">📤 Sauvegarder (Fichier)</button>
-                    <!-- NOUVEAU BOUTON RESET -->
-    <button class="btn btn-danger" onclick="resetProfile()">🗑️ RAZ</button>
-                    <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Charger</button>
-                    <input type="file" id="importFile" style="display: none" accept=".json" onchange="importProfile(this)">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ECRAN ADMIN (CRÉATEUR) -->
-    <div id="screen-admin" class="screen">
-        <div class="menu-box glass-panel">
-            <h2>Créateur de Grille</h2>
-            <p style="font-size:0.8rem; opacity:0.7; margin-bottom:10px;">Collez votre JSON ci-dessous :</p>
-            <textarea id="jsonInput" placeholder='[&#10;  {"mot":"CHAT", "definition":"Animal"},&#10;  {"mot":"CHIEN", "definition":"Aboye"}&#10;]'></textarea>
-            
-            <div style="display:grid; gap:10px; grid-template-columns: 1fr 1fr;">
-                <button class="btn" onclick="loadCustom()">🎮 Tester</button>
-                <button class="btn btn-secondary" onclick="goToMenu()">Retour</button>
-            </div>
-            <button class="btn btn-share" style="width:100%; margin-top:10px;" onclick="shareUrl()">🔗 Copier le Lien de Partage</button>
-        </div>
-    </div>
-
-    <!-- MODAL VICTOIRE -->
-    <div id="victoryModal" class="modal">
-        <div class="modal-content glass-panel">
-            <div style="font-size:3rem;">🎉</div>
-            <h2>Victoire !</h2>
-            <div id="finalScore" class="score-big">+100 XP</div>
-            <p id="streakBonus" style="color:#fbbf24; font-weight:bold; margin-bottom:20px;"></p>
-            
-            <div style="display:flex; gap:10px; justify-content:center;">
-                <button class="btn" onclick="closeModal()">Continuer</button>
-                <button class="btn btn-share" onclick="shareEmoji()">Partager 📱</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- TOASTS (NOTIFICATIONS SUCCÈS) -->
-    <div id="toastContainer" class="toast-container"></div>
-</div>
 
     <script>
-        /* --- CONFIGURATION DIFFICULTÉ --- */
-        const DIFFICULTIES = {
-            'easy': { label: 'Facile', size: 10, words: 8, multiplier: 0.8 },
-            'normal': { label: 'Normal', size: 15, words: 12, multiplier: 1.0 },
-            'hard': { label: 'Difficile', size: 18, words: 20, multiplier: 1.5 }
-        };
-        let currentDiff = 'normal';
-
-        /* --- CONFIGURATION SUCCÈS --- */
-        const ACHIEVEMENTS = [
-            // --- CATÉGORIE : PREMIERS PAS (Apprentissage) ---
-            { id: 'baby_steps', tier: 'bronze', icon: '🐣', title: 'Premiers Pas', desc: 'Gagner 1 partie' },
-            { id: 'warm_up', tier: 'bronze', icon: '☕', title: 'Échauffement', desc: 'Gagner 5 parties' },
-            { id: 'apprentice', tier: 'silver', icon: '🎓', title: 'Apprenti', desc: 'Gagner 10 parties' },
-            { id: 'regular', tier: 'silver', icon: '📅', title: 'Habitué', desc: 'Jouer 3 jours de suite' },
-            { id: 'addict', tier: 'gold', icon: '🔥', title: 'Accro', desc: 'Jouer 7 jours de suite' },
-
-            // --- CATÉGORIE : VITESSE (Chrono) ---
-            { id: 'runner', tier: 'bronze', icon: '👟', title: 'Coureur', desc: 'Gagner en moins de 3 min' },
-            { id: 'sprinter', tier: 'silver', icon: '⚡', title: 'Sprinter', desc: 'Gagner en moins de 2 min' },
-            { id: 'flash', tier: 'gold', icon: '🚀', title: 'The Flash', desc: 'Gagner en moins de 60 sec' },
-            { id: 'light_speed', tier: 'platinum', icon: '💫', title: 'Vitesse Lumière', desc: 'Gagner en moins de 30 sec (Facile min)' },
-
-            // --- CATÉGORIE : ÉRUDITION (Vocabulaire) ---
-            { id: 'reader', tier: 'bronze', icon: '📖', title: 'Lecteur', desc: 'Trouver 50 mots' },
-            { id: 'writer', tier: 'silver', icon: '✍️', title: 'Écrivain', desc: 'Trouver 100 mots' },
-            { id: 'poet', tier: 'gold', icon: '📜', title: 'Poète', desc: 'Trouver 500 mots' },
-            { id: 'dictionary', tier: 'platinum', icon: '📚', title: 'Dictionnaire Vivant', desc: 'Trouver 1000 mots' },
-            { id: 'encyclopedia', tier: 'platinum', icon: '🧠', title: 'Encyclopédie', desc: 'Trouver 5000 mots' },
-
-            // --- CATÉGORIE : PERFECTION (Sans Indices) ---
-            { id: 'clean', tier: 'bronze', icon: '✨', title: 'Propre', desc: '1 partie sans indice' },
-            { id: 'sharp', tier: 'silver', icon: '🔪', title: 'Affûté', desc: '5 parties sans indice' },
-            { id: 'eagle_eye', tier: 'gold', icon: '👁️', title: 'Oeil de Lynx', desc: '20 parties sans indice' },
-            { id: 'oracle', tier: 'platinum', icon: '🔮', title: 'L\'Oracle', desc: '50 parties sans indice' },
-
-            // --- CATÉGORIE : DIFFICULTÉ (Mode Hard) ---
-            { id: 'brave', tier: 'bronze', icon: '🛡️', title: 'Brave', desc: 'Gagner en mode Normal' },
-            { id: 'knight', tier: 'silver', icon: '⚔️', title: 'Chevalier', desc: 'Gagner 5 fois en Normal' },
-            { id: 'hero', tier: 'gold', icon: '🦁', title: 'Héros', desc: 'Gagner en mode Difficile' },
-            { id: 'legend', tier: 'platinum', icon: '👑', title: 'Légende', desc: 'Gagner 10 fois en Difficile' },
-            { id: 'godlike', tier: 'platinum', icon: '⚡', title: 'Divin', desc: 'Gagner en Difficile sans indice' },
-
-            // --- CATÉGORIE : THÈMES (Exploration) ---
-            { id: 'tech_fan', tier: 'bronze', icon: '💻', title: 'Geek', desc: 'Finir 3 grilles Tech' },
-            { id: 'zoo_keeper', tier: 'bronze', icon: '🦁', title: 'Gardien de Zoo', desc: 'Finir 3 grilles Animaux' },
-            { id: 'traveler', tier: 'bronze', icon: '✈️', title: 'Voyageur', desc: 'Finir 3 grilles Capitales' },
-            { id: 'polymath', tier: 'gold', icon: '🎨', title: 'Polymath', desc: 'Gagner dans tous les thèmes' },
-
-            // --- CATÉGORIE : PERSÉVÉRANCE (Échecs et Essais) ---
-            { id: 'never_give_up', tier: 'bronze', icon: '💪', title: 'Ne lâche rien', desc: 'Utiliser 5 indices dans une partie' },
-            { id: 'rich_kid', tier: 'silver', icon: '💸', title: 'Enfant Riche', desc: 'Dépenser 500 points en indices (Total)' },
-            { id: 'earlier', tier: 'silver', icon: '🌅', title: 'Earlier', desc: 'Jouer entre 3h et 5h du matin' },
-
-            // --- CATÉGORIE : SCORE (XP) ---
-            { id: 'level_5', tier: 'bronze', icon: '⭐', title: 'Niveau 5', desc: 'Atteindre le niveau 5' },
-            { id: 'level_10', tier: 'silver', icon: '🌟', title: 'Niveau 10', desc: 'Atteindre le niveau 10' },
-            { id: 'level_20', tier: 'gold', icon: '💫', title: 'Niveau 20', desc: 'Atteindre le niveau 20' },
-            { id: 'level_50', tier: 'platinum', icon: '🌌', title: 'Niveau 50', desc: 'Atteindre le niveau 50' },
-
-            // --- CATÉGORIE : SECRETS (Easter Eggs) ---
-            { id: 'creator', tier: 'gold', icon: '🛠️', title: 'Architecte', desc: 'Créer et jouer une grille perso' },
-            { id: 'share_spirit', tier: 'bronze', icon: '💌', title: 'Partageur', desc: 'Partager une grille avec un ami' },
-            { id: 'clicker', tier: 'bronze', icon: '🖱️', title: 'Clicker Fou', desc: 'Cliquer 10 fois sur le logo' },
-
-            // --- NOUVEAUX ---
-            { id: 'marathon', tier: 'gold', icon: '🏃', title: 'Marathonien', desc: 'Jouer 30 jours de suite' },
-            { id: 'century', tier: 'platinum', icon: '💯', title: 'Centenaire', desc: 'Jouer 100 parties' },
-            { id: 'sniper', tier: 'silver', icon: '🎯', title: 'Sniper', desc: 'Aucune erreur de frappe dans une partie' },
-            { id: 'night_owl', tier: 'bronze', icon: '🦉', title: 'Oiseau de Nuit', desc: 'Gagner une partie après 22h' },
-            { id: 'early_bird', tier: 'bronze', icon: '🐦', title: 'Lève-tôt', desc: 'Gagner une partie avant 8h' },
-            { id: 'weekend_warrior', tier: 'silver', icon: '🎉', title: 'Guerrier du WE', desc: 'Jouer Samedi et Dimanche' },
-            { id: 'math_genius', tier: 'silver', icon: '🧮', title: 'Calculatrice', desc: 'Gagner avec un score exact de 1000' }
-        ];
-        // --- DATA PACKS ---
+        /* --- DATA PACKS (MOTS) --- */
         const PACKS = {
+            
+            "animaux_bibliques": [
+                { "mot": "PHOQUE", "definition": "Ses peaux recouvraient le tabernacle (Exode)" },
+                { "mot": "COBRA", "definition": "Le nourrisson jouera sur son trou (Isaïe 11)" },
+                { "mot": "HIPPOPOTAME", "definition": "Mange de l'herbe verte, identifié au Béhémoth (Job)" },
+                { "mot": "CROCODILE", "definition": "Sa peau est une armure, identifié au Léviathan (Job)" },
+                { "mot": "DAMAN", "definition": "Petit animal sage cachés dans les rochers (Psaume 104)" },
+                { "mot": "TAUREAU", "definition": "Symbole de force brute, impossible à dompter (Job 39)" },
+                { "mot": "AIGLE", "definition": "Construit son nid sur les hauteurs (Job 39)" },
+                { "mot": "CERF", "definition": "Grimpeur agile, il a les pieds comme des biches" },
+                { "mot": "LION", "definition": "Rôde comme un prédateur, cherchant qui dévorer (1 Pierre)" },
+                { "mot": "OURS", "definition": "David en a tué un pour protéger son troupeau" },
+                { "mot": "ANE", "definition": "Animal de bât, a parlé à Balaam" },
+                { "mot": "ANESSES", "definition": "Saül les cherchait quand il fut oint roi" },
+                { "mot": "MOINEAU", "definition": "Vendu pour une pièce de monnaie, Dieu ne l'oublie pas" },
+                { "mot": "CORBEAU", "definition": "Dieu les nourrit, ils n'ont ni grenier ni moisson (Luc)" },
+                { "mot": "CAILLE", "definition": "Apportée par le vent pour nourrir Israël au désert" },
+                { "mot": "POISSON", "definition": "A englouti Jonas sur ordre de Jéhovah" },
+                { "mot": "BREBIS", "definition": "Connait la voix de son berger" },
+                { "mot": "CHEVRE", "definition": "Animal pur, son lait nourrissait la maison (Proverbes)" },
+                { "mot": "LOUP", "definition": "Le prophète Isaïe dit qu'il résidera avec l'agneau" },
+                { "mot": "LEOPARD", "definition": "Bête rapide, ne peut changer ses taches (Jérémie)" },
+                { "mot": "SAUTERELLE", "definition": "Avance en ordre comme une armée (Proverbes 30)" },
+                { "mot": "FOURMI", "definition": "Prépare sa nourriture en été, exemple de sagesse" },
+                { "mot": "GEKO", "definition": "Saisissable avec les mains, vit dans les palais (Prov 30)" },
+                { "mot": "SERPENT", "definition": "Le plus prudent des animaux des champs (Genèse)" },
+                { "mot": "COLOMBE", "definition": "Simple et innocente, signe du Saint-Esprit" },
+                { "mot": "VAUTOUR", "definition": "Son œil voit la nourriture de loin (Job)" },
+                { "mot": "AUTRUCHE", "definition": "Dieu l'a privée de sagesse, mais elle court vite" },
+                { "mot": "CHAMEAU", "definition": "C'est plus facile pour lui de passer par le trou d'une aiguille" },
+                { "mot": "COCHON", "definition": "L'animal lavé retourne à sa boue (Proverbe)" },
+                { "mot": "PORC", "definition": "Le fils prodigue aurait voulu manger ses caroubes" },
+                { "mot": "CHIEN", "definition": "Même lui mange les miettes sous la table" },
+                { "mot": "RENARD", "definition": "A des tanières, mais le Fils de l'homme n'a rien" },
+                { "mot": "CHACAL", "definition": "Symbole de désolation, habite les ruines" },
+                { "mot": "HUPPE", "definition": "Oiseau déclaré impur dans la Loi mosaique" },
+                { "mot": "CIGOGNE", "definition": "Connait bien son temps et sa migration (Jérémie)" },
+                { "mot": "PELICAN", "definition": "Oiseau solitaire du désert (Psaume 102)" },
+                { "mot": "GRENOUILLE", "definition": "Deuxième plaie d'Égypte" },
+                { "mot": "MOUSTIQUE", "definition": "La poussière transformée en insectes (Plaie d'Égypte)" },
+                { "mot": "TAON", "definition": "Insecte piquant envoyé comme plaie" },
+                { "mot": "BOUC", "definition": "Animal puissant, représente la Grèce dans Daniel" },
+                { "mot": "BELIER", "definition": "Ses cornes furent retenues dans un buisson (Sacrifice d'Abraham)" },
+                { "mot": "GAZELLE", "definition": "Rapide, symbole de la femme aimée (Cantique)" },
+                { "mot": "BICHE", "definition": "Naphtali est comparé à elle (Genèse)" },
+                { "mot": "CHEVAL", "definition": "On le prépare pour le jour de la bataille" },
+                { "mot": "MULET", "definition": "Salomon est monté dessus pour son onction" },
+                { "mot": "SANGSUE", "definition": "Crie sans cesse 'Donne ! Donne !'" },
+                { "mot": "VIPERE", "definition": "Paul en a secoué une dans le feu à Malte" },
+                { "mot": "SCORPION", "definition": "Pire qu'un fouet, symbole de douleur (1 Rois 12)" },
+                { "mot": "VER", "definition": "A rongé la plante de Jonas" },
+                { "mot": "MITES", "definition": "Elles rongent les trésors terrestres" },
+                { "mot": "MOUCHE", "definition": "Fait sentir mauvais l'huile du parfumeur" },
+                { "mot": "PAON", "definition": "Importé par les navires de Salomon" },
+                { "mot": "SINGE", "definition": "Rapporté d'Ophir par la flotte de Salomon" },
+                { "mot": "HYENE", "definition": "Animal rayé mentionné dans Jérémie" },
+                { "mot": "CHOUETTE", "definition": "Habitant des ruines désertiques" },
+                { "mot": "OISEAU", "definition": "Jésus dit: 'Regardez-les attentivement'" },
+                { "mot": "BALEINE", "definition": "Gros Poisson pour Jonas" },
+                { "mot": "TOURTERELLE", "definition": "Offrande des pauvres au temple (Lévitique)" },
+                { "mot": "PIGEON", "definition": "Utilisé pour les sacrifices si l'agneau était trop cher" },
+                { "mot": "ANTILOPE", "definition": "Animal pur autorisé à la consommation (Deutéronome)" },
+                { "mot": "CHEVREUIL", "definition": "Rapide, mentionné dans le menu de Salomon" },
+                { "mot": "PERDRIX", "definition": "David se compare à elle, chassée dans les montagnes" },
+                { "mot": "MOUCHERON", "definition": "Les pharisiens le filtrent mais avalent le chameau" },
+                { "mot": "HERON", "definition": "Oiseau déclaré impur selon la Loi" },
+                { "mot": "CORMORAN", "definition": "Oiseau pêcheur impur (Lévitique 11)" },
+                { "mot": "MOUETTE", "definition": "Volatile interdit à la consommation" },
+                { "mot": "HIBOU", "definition": "Symbole de désolation, habite les ruines" },
+                { "mot": "CHEVRE", "definition": "Ses poils servaient à tisser des toiles de tente" },
+                { "mot": "BETE SAUVAGE", "definition": "Symbole politique montant de la mer (Révélation)" },
+                { "mot": "DRAGON", "definition": "Symbole de Satan dans la Révélation" },
+                { "mot": "BOUC", "definition": "Le poilu représente le roi de Grèce (Daniel 8)" }
+            ],
+            "personnages_bibliques": [
+                { "mot": "JEHOVAH", "definition": "Le nom de Dieu (Psaume 83:18)" },
+                { "mot": "JESUS", "definition": "Le Fils de Dieu, la 'Parole'" },
+                { "mot": "MICHEL", "definition": "L'archange, chef de l'armée des anges" },
+                { "mot": "SATAN", "definition": "Le chef des démons, le père du mensonge" },
+                { "mot": "ADAM", "definition": "Le premier homme humain" },
+                { "mot": "EVE", "definition": "Mère de tous les vivants" },
+                { "mot": "ABEL", "definition": "Son sacrifice fut approuvé, tué par son frère" },
+                { "mot": "CAIN", "definition": "A fondé la première ville, meurtrier de son frère" },
+                { "mot": "NOE", "definition": "Prédicateur de justice, a construit l'arche" },
+                { "mot": "NIMROD", "definition": "Puissant chasseur en opposition avec Jéhovah" },
+                { "mot": "ABRAHAM", "definition": "Ami de Jéhovah, père d'une multitude" },
+                { "mot": "SARA", "definition": "A ri en apprenant qu'elle aurait un fils" },
+                { "mot": "ISAAC", "definition": "Fils de la promesse, a failli être sacrifié" },
+                { "mot": "JACOB", "definition": "A lutté avec un ange pour être béni" },
+                { "mot": "JOSEPH", "definition": "Vendu par ses frères, devenu intendant en Égypte" },
+                { "mot": "MOISE", "definition": "A reçu la Loi au mont Sinaï" },
+                { "mot": "AARON", "definition": "Premier grand prêtre d'Israël" },
+                { "mot": "PHARAON", "definition": "Son cœur s'est endurci malgré les dix plaies" },
+                { "mot": "RAHAB", "definition": "Prostituée de Jéricho devenue ancêtre de Jésus" },
+                { "mot": "JOSUÉ", "definition": "Successeur de Moïse, a fait tomber les murs" },
+                { "mot": "SAMSON", "definition": "Juge à la force surnaturelle, trahi par Dalila" },
+                { "mot": "RUTH", "definition": "Moabite fidèle qui a dit : 'Ton peuple sera mon peuple'" },
+                { "mot": "SAMUEL", "definition": "Prophète qui a oint Saül puis David" },
+                { "mot": "SAUL", "definition": "Premier roi d'Israël, a fini par consulter une médium" },
+                { "mot": "DAVID", "definition": "L'homme selon le cœur de Dieu, a vaincu Goliath" },
+                { "mot": "GOLIATH", "definition": "Géant philistin abattu par une fronde" },
+                { "mot": "JONATHAN", "definition": "Meilleur ami de David, fils du roi Saül" },
+                { "mot": "SALOMON", "definition": "A demandé la sagesse, a bâti le temple" },
+                { "mot": "ELIE", "definition": "Prophète nourri par des corbeaux, monté dans la tempête" },
+                { "mot": "ELISÉE", "definition": "A reçu deux parts de l'esprit d'Élie" },
+                { "mot": "JEZABEL", "definition": "Reine méchante, mangée par les chiens" },
+                { "mot": "JONAS", "definition": "A fui sa mission vers Tarsis, avalé par un poisson" },
+                { "mot": "JOB", "definition": "A gardé son intégrité malgré la perte de tout" },
+                { "mot": "ESAIE", "definition": "A prophétisé abondamment sur le Messie" },
+                { "mot": "JEREMIE", "definition": "Prophète pleurant sur Jérusalem, jeté dans une citerne" },
+                { "mot": "DANIEL", "definition": "Jeté dans la fosse aux lions pour avoir prié" },
+                { "mot": "NEBOUKADNETSAR", "definition": "Roi de Babylone, a détruit Jérusalem" },
+                { "mot": "ESTHER", "definition": "Reine juive qui a sauvé son peuple de Haman" },
+                { "mot": "MARIE", "definition": "Vierge choisie pour porter le Fils de Dieu" },
+                { "mot": "JOSEPH", "definition": "Charpentier, père adoptif de Jésus" },
+                { "mot": "JEAN", "definition": "Le Baptiseur, a préparé le chemin" },
+                { "mot": "PIERRE", "definition": "A marché sur l'eau, a renié Jésus trois fois" },
+                { "mot": "JUDAS", "definition": "Iscariote, a livré Jésus pour 30 pièces d'argent" },
+                { "mot": "PONCEPILATE", "definition": "Gouverneur romain, s'est lavé les mains" },
+                { "mot": "THOMAS", "definition": "A eu besoin de voir les trous des clous pour croire" },
+                { "mot": "PAUL", "definition": "Apôtre des nations, ancien persécuteur" },
+                { "mot": "ETIENNE", "definition": "Premier martyr chrétien, lapidé" },
+                { "mot": "CORNILLE", "definition": "Officier romain, premier converti non-juif" },
+                { "mot": "TIMOTHÉE", "definition": "Jeune compagnon de voyage de Paul" },
+                { "mot": "LUC", "definition": "Le médecin bien-aimé, rédacteur d'un évangile" },
+                { "mot": "HENOK", "definition": "Il a marché avec le vrai Dieu, père de Mathoushélah" },
+                { "mot": "MATHOUSHELAH", "definition": "L'homme qui a vécu le plus longtemps (969 ans)" },
+                { "mot": "MELKISEDEK", "definition": "Roi de Salem et prêtre du Dieu Très-Haut sans généalogie" },
+                { "mot": "LOT", "definition": "Neveu d'Abraham, sa femme est devenue une statue de sel" },
+                { "mot": "ISAIE", "definition": "A vu la gloire de Jéhovah et a dit : 'Me voici !'" },
+                { "mot": "EZECHIEL", "definition": "A vu un char céleste et a mangé un rouleau" },
+                { "mot": "DANIEL", "definition": "A interprété l'écriture sur le mur pour Belshatsar" },
+                { "mot": "BELSHATSAR", "definition": "Dernier roi de Babylone, a vu une main écrire" },
+                { "mot": "BOAZ", "definition": "Racheteur de Ruth et ancêtre de Jésus" },
+                { "mot": "MARDOCHEE", "definition": "Cousin d'Esther, a refusé de s'incliner devant Haman" },
+                { "mot": "HAMAN", "definition": "Agaguite ennemi des Juifs, pendu à son propre poteau" },
+                { "mot": "GEDEON", "definition": "A vaincu Madian avec 300 hommes et des jarres" },
+                { "mot": "BALAAM", "definition": "Prophète avide, son ânesse l'a repris" },
+                { "mot": "BALAK", "definition": "Roi de Moab qui voulait maudire Israël" },
+                { "mot": "JOSIAS", "definition": "Bon roi enfant, a brûlé les os des prêtres païens" },
+                { "mot": "EZECHIAS", "definition": "A prié lors du siège de Sennachérib, vie prolongée de 15 ans" },
+                { "mot": "SENNACHERIB", "definition": "Roi assyrien arrogant, son armée fut décimée par un ange" },
+                { "mot": "ABSALOM", "definition": "Fils rebelle de David, ses cheveux se prirent dans un arbre" },
+                { "mot": "BATHSHEBA", "definition": "Femme d'Urie, devenue mère de Salomon" },
+                { "mot": "NATHAN", "definition": "Prophète ayant repris David avec l'histoire de la brebis" },
+                { "mot": "DALILA", "definition": "A coupé les cheveux de Samson contre de l'argent" },
+                { "mot": "LAZARE", "definition": "Ami de Jésus, sorti de la tombe après 4 jours" },
+                { "mot": "MARTHE", "definition": "Sœur de Lazare, s'inquiétait de beaucoup de choses" },
+                { "mot": "ZACCHEE", "definition": "Collecteur d'impôts de petite taille monté sur un arbre" },
+                { "mot": "NICODEME", "definition": "Est venu voir Jésus de nuit, a apporté des aromates" },
+                { "mot": "BARNABAS", "definition": "Fils de consolation, a accompagné Paul" },
+                { "mot": "SILAS", "definition": "Compagnon de prison de Paul à Philippes" },
+                { "mot": "APOLLOS", "definition": "Orateur éloquent, instruit par Priscille et Aquila" },
+                { "mot": "GAMALIEL", "definition": "Enseignant de la Loi respecté, a conseillé la prudence" },
+                { "mot": "ONESIME", "definition": "Esclave fugitif devenu un frère fidèle pour Paul" }
+            ],
+            "lieux_bibliques": [
+                { "mot": "EDEN", "definition": "Jardin des délices, berceau de l'humanité" },
+                { "mot": "ARARAT", "definition": "Montagnes où l'arche de Noé s'est posée" },
+                { "mot": "BABEL", "definition": "Lieu de la confusion des langues" },
+                { "mot": "OUR", "definition": "Ville chaldéenne d'où Abraham est parti" },
+                { "mot": "SODOME", "definition": "Détruite par le feu et le soufre avec Gomorrhe" },
+                { "mot": "EGYPTE", "definition": "Pays de l'esclavage, le 'pays du Nord' prophétique" },
+                { "mot": "NIL", "definition": "Fleuve changé en sang par Moïse" },
+                { "mot": "SINAI", "definition": "Montagne où la Loi a été donnée" },
+                { "mot": "CANAAN", "definition": "La Terre promise ruisselant de lait et de miel" },
+                { "mot": "JERICHO", "definition": "Ville aux murailles effondrées, ville des palmiers" },
+                { "mot": "JERUSALEM", "definition": "La ville du Grand Roi, lieu du temple" },
+                { "mot": "SION", "definition": "Montagne sainte, symbole du Royaume céleste" },
+                { "mot": "BETHLEEM", "definition": "Maison du pain, lieu de naissance de David et Jésus" },
+                { "mot": "NAZARETH", "definition": "Ville où Jésus a grandi" },
+                { "mot": "GALILEE", "definition": "Région où Jésus a fait la plupart de ses miracles" },
+                { "mot": "JOURDAIN", "definition": "Fleuve où Jésus fut baptisé" },
+                { "mot": "MERROUGE", "definition": "Traversée à pied sec par les Israélites" },
+                { "mot": "BABYLONE", "definition": "Empire mondial de la fausse religion (Révélation)" },
+                { "mot": "NINIVE", "definition": "La grande ville sanguinaire, capitale assyrienne" },
+                { "mot": "TARSIS", "definition": "Destination de fuite de Jonas (l'Espagne actuelle)" },
+                { "mot": "CARMEL", "definition": "Mont où Élie a défié les prophètes de Baal" },
+                { "mot": "GETHSEMANE", "definition": "Jardin du pressoir à huile, lieu d'angoisse" },
+                { "mot": "GOLGOTHA", "definition": "Lieu du Crâne, site de l'exécution de Jésus" },
+                { "mot": "GEHENNE", "definition": "Vallée de Hinnom, symbole de destruction éternelle" },
+                { "mot": "HARMAGUEDON", "definition": "Lieu symbolique de la guerre finale de Dieu " },
+                { "mot": "DAMAS", "definition": "Sur ce chemin, Saul a été aveuglé par la lumière" },
+                { "mot": "ANTIOCHE", "definition": "Là où les disciples furent appelés chrétiens pour la première fois" },
+                { "mot": "ROME", "definition": "Ville où Paul a été emprisonné et exécuté" },
+                { "mot": "PATMOS", "definition": "Île de l'exil de Jean où il reçut la Révélation" },
+                { "mot": "TARTARE", "definition": "État d'abaissement des anges déchus (2 Pierre)" },
+                { "mot": "SHEOL", "definition": "La tombe commune aux hommes (Hébreu)" },
+                { "mot": "HADES", "definition": "La tombe commune aux hommes (Grec)" },
+                { "mot": "AREOPAGE", "definition": "Colline de Mars à Athènes où Paul a prêché" },
+                { "mot": "SILOE", "definition": "Piscine où l'aveugle s'est lavé et a vu" },
+                { "mot": "BETHANIE", "definition": "Village de Marthe, Marie et Lazare" },
+                { "mot": "EMMAUS", "definition": "Village vers lequel marchaient deux disciples après la résurrection" },
+                { "mot": "MEGUIDDO", "definition": "Plaine stratégique associée à la guerre finale" },
+                { "mot": "PHILIPPES", "definition": "Ville où Paul et Silas furent emprisonnés et ont chanté" },
+                { "mot": "CORINTHE", "definition": "Ville connue pour son immoralité et sa congrégation troublée" },
+                { "mot": "EPHESE", "definition": "Ville du temple d'Artémis, destinataire d'une lettre de Paul" },
+                { "mot": "SAMARIE", "definition": "Capitale du royaume du Nord, rivale de Jérusalem" },
+                { "mot": "SICHEM", "definition": "Lieu du puits de Jacob et du serment de Joseph" },
+                { "mot": "HEBRON", "definition": "Ville de refuge, lieu de sépulture des patriarches" },
+                { "mot": "BETHEL", "definition": "Maison de Dieu, Jacob y a vu l'échelle" },
+                { "mot": "GOMORRHE", "definition": "Ville voisine de Sodome, détruite par le feu" },
+                { "mot": "SUSE", "definition": "Capitale perse où vivait Esther" },
+                { "mot": "CAPERNAUM", "definition": "Ville au bord du lac, quartier général de Jésus" },
+                { "mot": "CANA", "definition": "Village du premier miracle (eau changée en vin)" },
+                { "mot": "CESAREE", "definition": "Port romain, résidence de Corneille et Pilate" },
+                { "mot": "JOPPE", "definition": "Port où Jonas a embarqué et Pierre a eu sa vision" },
+                { "mot": "TYR", "definition": "Ville riche condamnée à devenir un séchoir à filets" },
+                { "mot": "SIDON", "definition": "Ville phénicienne voisine de Tyr" },
+                { "mot": "MOAB", "definition": "Pays ennemi descendant de Lot, à l'est du Jourdain" },
+                { "mot": "EDOM", "definition": "Pays des descendants d'Ésaü, la terre rouge" },
+                { "mot": "AMMON", "definition": "Nations ennemies, souvent en guerre contre Israël" },
+                { "mot": "CHYPRE", "definition": "Île natale de Barnabas, traversée par Paul" },
+                { "mot": "MALTE", "definition": "Île du naufrage de Paul (Mélita)" },
+                { "mot": "THESSALONIQUE", "definition": "Ville macédonienne où les Juifs étaient jaloux" },
+                { "mot": "BEREE", "definition": "Ville où les Juifs examinaient les Écritures chaque jour" },
+                { "mot": "ATHENES", "definition": "Ville pleine d'idoles, lieu de l'Aréopage" },
+                { "mot": "LYSTRES", "definition": "Ville où Paul fut lapidé et laissé pour mort" },
+                { "mot": "DERBE", "definition": "Dernière étape du premier voyage de Paul" }
+            ],
+            
             "tech": [
                 { "mot": "INTERNET", "definition": "Réseau mondial" }, { "mot": "NAVIGATEUR", "definition": "Logiciel pour surfer" },
                 { "mot": "INTERFACE", "definition": "Lien homme-machine" }, { "mot": "SATELLITE", "definition": "Objet en orbite" },
@@ -591,39 +1340,419 @@ textarea { width: 100%; height: 150px; background: rgba(0,0,0,0.3); color: white
                 { "mot": "SINGE", "definition": "Primate agile" }, { "mot": "OURS", "definition": "Aime le miel" },
                 { "mot": "ZEBRE", "definition": "Cheval rayé" }, { "mot": "SERPENT", "definition": "Reptile rampant" }
             ],
+            "pays_monde": [
+                { "mot": "BELGIQUE", "definition": "Le pays qui a les meilleures frites" },
+                { "mot": "SUISSE", "definition": "Neutre, riche et précis comme un coucou" },
+                { "mot": "ITALIE", "definition": "Une botte qui ne marche pas mais cuisine divinement" },
+                { "mot": "ESPAGNE", "definition": "On y fait la sieste après avoir mangé tard" },
+                { "mot": "ALLEMAGNE", "definition": "Ils ont de superbes voitures" },
+                { "mot": "ROYAUMEUNI", "definition": "A colonisé le monde pour des épices" },
+                { "mot": "IRLANDE", "definition": "L'île d'émeraude où le trèfle porte chance" },
+                { "mot": "PORTUGAL", "definition": "Des explorateurs devenus champions de morue" },
+                { "mot": "PAYSBAS", "definition": "Là où il y a plus de vélos que d'habitants" },
+                { "mot": "LUXEMBOURG", "definition": "Un coffre-fort déguisé en pays" },
+                { "mot": "MONACO", "definition": "Un rocher pour milliardaires et Formule 1" },
+                { "mot": "VATICAN", "definition": "Le plus petit pays" },
+                { "mot": "GRECE", "definition": "A inventé la démocratie et la salade feta" },
+                { "mot": "AUTRICHE", "definition": "Le pays de Mozart et des escalopes panées" },
+                { "mot": "HONGRIE", "definition": "Le pays du Rubik's Cube et du paprika" },
+                { "mot": "POLOGNE", "definition": "A souvent disparu de la carte, mais toujours revenue" },
+                { "mot": "TCHEQUIE", "definition": "Champions du monde de consommation de bière" },
+                { "mot": "SUEDE", "definition": "Ils t'obligent à monter tes meubles toi-même" },
+                { "mot": "NORVEGE", "definition": "Des vikings qui ont trouvé du pétrole" },
+                { "mot": "FINLANDE", "definition": "Le pays du Père Noël et du Nokia 3310" },
+                { "mot": "DANEMARK", "definition": "Là où on marche sur des LEGO pieds nus" },
+                { "mot": "ISLANDE", "definition": "Terre de glace où les volcans bloquent les avions" },
+                { "mot": "RUSSIE", "definition": "Si grand qu'il fait nuit d'un côté quand il fait jour de l'autre" },
+                { "mot": "UKRAINE", "definition": "Le grenier à blé de l'Europe" },
+                { "mot": "CROATIE", "definition": "La côte aux mille îles et aux dalmatiens" },
+                { "mot": "SERBIE", "definition": "Le pays de Djokovic et des Balkans ardents" },
+                { "mot": "ROUMANIE", "definition": "La patrie des Dacia" },
+                { "mot": "BULGARIE", "definition": "Le pays du yaourt et des roses" },
+                { "mot": "ALBANIE", "definition": "Le pays des aigles et des bunkers" },
+                { "mot": "ETATSUNIS", "definition": "Ont jeté le thé à la mer pour ne pas payer d'impôts" },
+                { "mot": "CANADA", "definition": "S'excuse tout le temps en mangeant de la poutine" },
+                { "mot": "MEXIQUE", "definition": "Aime les sombreros et la nourriture piquante" },
+                { "mot": "BRESIL", "definition": "Le pays où le football est une religion" },
+                { "mot": "ARGENTINE", "definition": "Le pays du tango, du steak et de Messi" },
+                { "mot": "CHILI", "definition": "Le pays le plus fin et le plus long du monde" },
+                { "mot": "PEROU", "definition": "Là où les Incas ont bâti des cités dans les nuages" },
+                { "mot": "COLOMBIE", "definition": "Le pays de l'émeraude et du café arabica" },
+                { "mot": "VENEZUELA", "definition": "Possède les plus grandes réserves de pétrole (et d'inflation)" },
+                { "mot": "BOLIVIE", "definition": "Le pays le plus haut perché, sans accès à la mer" },
+                { "mot": "URUGUAY", "definition": "Petit pays qui a gagné la première Coupe du Monde" },
+                { "mot": "PARAGUAY", "definition": "Un cœur en Amérique du Sud qui parle guarani" },
+                { "mot": "EQUATEUR", "definition": "Il porte le nom de la ligne du milieu" },
+                { "mot": "CUBA", "definition": "L'île des cigares et des vieilles voitures américaines" },
+                { "mot": "JAMAIQUE", "definition": "L'île du reggae et des hommes les plus rapides" },
+                { "mot": "HAITI", "definition": "Première république noire indépendante" },
+                { "mot": "PANAMA", "definition": "Connu pour son canal et ses chapeaux (qui viennent d'Équateur)" },
+                { "mot": "COSTARICA", "definition": "Pas d'armée, juste de la pure vie (Pura Vida)" },
+                { "mot": "CHINE", "definition": "A construit un mur visible (ou pas) depuis l'espace" },
+                { "mot": "JAPON", "definition": "Le pays du Soleil Levant et des sushis" },
+                { "mot": "INDE", "definition": "La plus grande démocratie et le plus de vaches sacrées" },
+                { "mot": "COREE", "definition": "Coupée en deux : K-Pop au Sud, dictature au Nord" },
+                { "mot": "VIETNAM", "definition": "Le pays du dragon et de la soupe Phô" },
+                { "mot": "THAILANDE", "definition": "Le pays du sourire et des plats très épicés" },
+                { "mot": "INDONESIE", "definition": "Archipel aux 17 000 îles et volcans" },
+                { "mot": "PHILIPPINES", "definition": "L'archipel nommé en l'honneur d'un roi d'Espagne" },
+                { "mot": "MALAISIE", "definition": "Là où les tours jumelles Petronas touchent le ciel" },
+                { "mot": "SINGAPOUR", "definition": "Une ville-état où le chewing-gum est contrôlé" },
+                { "mot": "MONGOLIE", "definition": "L'empire de Gengis Khan devenu terre de nomades" },
+                { "mot": "NEPAL", "definition": "Le toit du monde, là où est l'Everest" },
+                { "mot": "AFGHANISTAN", "definition": "Cœur de l'Asie, terre de montagnes et d'histoires" },
+                { "mot": "PAKISTAN", "definition": "Le pays des purs, voisin de l'Inde" },
+                { "mot": "IRAN", "definition": "L'ancienne Perse, pays des tapis et des poètes" },
+                { "mot": "IRAK", "definition": "Le berceau de la civilisation, entre le Tigre et l'Euphrate" },
+                { "mot": "SYRIE", "definition": "Terre historique de Damas, sur la route de la soie" },
+                { "mot": "LIBAN", "definition": "Le pays du cèdre, la Suisse du Moyen-Orient" },
+                { "mot": "ISRAEL", "definition": "Terre promise où coule le lait et le miel" },
+                { "mot": "JORDANIE", "definition": "Abrite la cité rose de Pétra" },
+                { "mot": "ARABIESAOUDITE", "definition": "Désert de pétrole et berceau de l'Islam" },
+                { "mot": "EMIRATS", "definition": "Ont construit des îles en forme de palmiers" },
+                { "mot": "TURQUIE", "definition": "A cheval sur deux continents, pont entre Orient et Occident" },
+                { "mot": "EGYPTE", "definition": "Aime les chats et les pyramides depuis 4000 ans" },
+                { "mot": "MAROC", "definition": "Royaume du couchant, du thé à la menthe et de l'Atlas" },
+                { "mot": "ALGERIE", "definition": "Le plus grand pays d'Afrique, terre des Fennecs" },
+                { "mot": "TUNISIE", "definition": "L'ancienne Carthage, pays du jasmin" },
+                { "mot": "SENEGAL", "definition": "Pays de la Téranga (hospitalité) à l'ouest" },
+                { "mot": "COTEDIVOIRE", "definition": "Premier producteur de cacao (merci pour le chocolat)" },
+                { "mot": "MALI", "definition": "L'empire de l'or de Mansa Moussa" },
+                { "mot": "NIGERIA", "definition": "Le géant de l'Afrique et de Nollywood" },
+                { "mot": "CAMEROUN", "definition": "L'Afrique en miniature, pays des Lions Indomptables" },
+                { "mot": "RDC", "definition": "Cœur de l'Afrique, riche en minerais et en rumba" },
+                { "mot": "KENYA", "definition": "Terre de safaris et de coureurs de marathon" },
+                { "mot": "ETHIOPIE", "definition": "Jamais colonisée, berceau du café" },
+                { "mot": "SOMALIE", "definition": "La corne de l'Afrique, connue pour ses pirates" },
+                { "mot": "AFRIQUEDUSUD", "definition": "La nation arc-en-ciel de Mandela" },
+                { "mot": "MADAGASCAR", "definition": "L'île rouge où vivent les lémuriens" },
+                { "mot": "AUSTRALIE", "definition": "Là où tous les animaux essaient de te tuer" },
+                { "mot": "NOUVELLEZELANDE", "definition": "Terre du milieu, peuplée de moutons et de kiwis" },
+                { "mot": "FIDJI", "definition": "Paradis du Pacifique et du rugby à 7" },
+                { "mot": "SAMOA", "definition": "Îles polynésiennes aux guerriers tatoués" },
+                { "mot": "TAHITI", "definition": "Pas un pays (France), mais le rêve polynésien" },
+                { "mot": "ANDORRE", "definition": "Coincé dans les Pyrénées pour le shopping pas cher" },
+                { "mot": "SANMARIN", "definition": "La plus vieille république du monde" },
+                { "mot": "LIECHTENSTEIN", "definition": "On oublie souvent qu'il existe, sauf les banquiers" },
+                { "mot": "MALTE", "definition": "Une île forteresse au milieu de la Méditerranée" },
+                { "mot": "CHYPRE", "definition": "L'île d'Aphrodite, divisée en deux" },
+                { "mot": "GEORGIE", "definition": "A inventé le vin il y a 8000 ans" },
+                { "mot": "ARMENIE", "definition": "Premier pays officiellement chrétien de l'histoire" },
+                { "mot": "AZERBAIDJAN", "definition": "Terre de feu au bord de la Caspienne" },
+                { "mot": "KAZAKHSTAN", "definition": "Le plus grand pays sans accès à la mer (Borat en vient)" },
+                { "mot": "OUZBEKISTAN", "definition": "Sur la route de la soie, joyau de Samarcande" },
+                { "mot": "BANGLADESH", "definition": "Le pays des rivières, né en 1971" },
+                { "mot": "SRILANKA", "definition": "La larme de l'Inde, île du thé Ceylan" },
+                { "mot": "MYANMAR", "definition": "Le pays aux mille pagodes dorées" },
+                { "mot": "LAOS", "definition": "Le pays au million d'éléphants" },
+                { "mot": "CAMBODGE", "definition": "Terre des temples d'Angkor Wat" },
+                { "mot": "TAINWAN", "definition": "L'île technologique qui fabrique tes puces" },
+                { "mot": "COREEDUNORD", "definition": "Le royaume ermite le plus fermé du monde" },
+                { "mot": "COREEDUSUD", "definition": "Le pays du matin calme et de Samsung" },
+                { "mot": "ZIMBABWE", "definition": "Connu pour les chutes Victoria et l'hyperinflation" },
+                { "mot": "BOTSWANA", "definition": "Pays des diamants et des éléphants du Kalahari" },
+                { "mot": "NAMIBIE", "definition": "Là où le désert rencontre l'océan" },
+                { "mot": "TANZANIE", "definition": "Abrite le Kilimandjaro, toit de l'Afrique" },
+                { "mot": "OUGANDA", "definition": "La perle de l'Afrique selon Churchill" },
+                { "mot": "RWANDA", "definition": "Le pays des mille collines et des gorilles" },
+                { "mot": "GHANA", "definition": "La Gold Coast, première indépendance noire" },
+                { "mot": "BENIN", "definition": "Berceau du vaudou" },
+                { "mot": "TOGO", "definition": "Petite bande de terre souriante en Afrique de l'Ouest" },
+                { "mot": "BURKINAFASO", "definition": "Le pays des hommes intègres" },
+                { "mot": "GUINEE", "definition": "Le château d'eau de l'Afrique de l'Ouest" },
+                { "mot": "LIBERIA", "definition": "Fondé par des esclaves américains libérés" },
+                { "mot": "SIERRALEONE", "definition": "La montagne du lion et ses diamants" },
+                { "mot": "MAURITANIE", "definition": "Entre désert et océan, pays des Maures" },
+                { "mot": "TCHAD", "definition": "Cœur mort de l'Afrique, a un lac qui rétrécit" },
+                { "mot": "SOUDAN", "definition": "A plus de pyramides que l'Égypte (si, c'est vrai)" },
+                { "mot": "ERYTHREE", "definition": "Pays de la mer Rouge, très fermé" },
+                { "mot": "DJIBOUTI", "definition": "Petit pays stratégique, chaud et militaire" },
+                { "mot": "GABON", "definition": "Pays du pétrole et de la forêt vierge" },
+                { "mot": "CONGO", "definition": "Le petit frère de la RDC, capitale Brazzaville" },
+                { "mot": "ANGOLA", "definition": "Géant lusophone d'Afrique australe" },
+                { "mot": "MOZAMBIQUE", "definition": "Côte immense, crevettes et passé portugais" },
+                { "mot": "ZAMBIE", "definition": "Pays du cuivre et des chutes Victoria (aussi)" },
+                { "mot": "MALAWI", "definition": "Le cœur chaud de l'Afrique et son grand lac" },
+                { "mot": "MAURICE", "definition": "L'île du Dodo (disparu) et des plages (restantes)" },
+                { "mot": "SEYCHELLES", "definition": "Le paradis fiscal aux plages de granit" },
+                { "mot": "COMORES", "definition": "Les îles de la lune et des parfums" },
+                { "mot": "SALVADOR", "definition": "Le petit poucet d'Amérique Centrale, terre de volcans" },
+                { "mot": "HONDURAS", "definition": "République bananière originelle" },
+                { "mot": "NICARAGUA", "definition": "Terre de lacs et de volcans" },
+                { "mot": "GUATEMALA", "definition": "Cœur du monde Maya" },
+                { "mot": "BELIZE", "definition": "Seul pays anglophone d'Amérique Centrale" },
+                { "mot": "BAHAMAS", "definition": "700 îles et des cochons nageurs" },
+                { "mot": "REPUBLIQUEDOMINICAINE", "definition": "Partage son île avec Haïti, plages de Punta Cana" },
+                { "mot": "TRINITEETTOBAGO", "definition": "Patrie du carnaval et du steel-drum" },
+                { "mot": "BARBADE", "definition": "L'île de Rihanna" },
+                { "mot": "GUYANA", "definition": "Seul pays anglophone d'Amérique du Sud" },
+                { "mot": "SURINAME", "definition": "Parle néerlandais en Amérique du Sud" },
+                { "mot": "GUYANE", "definition": "C'est la France en Amérique du Sud (fusées Ariane)" },
+                { "mot": "PAPOUASIE", "definition": "Pays aux 800 langues différentes" },
+                { "mot": "VANUATU", "definition": "Île du saut à l'élastique traditionnel (liane)" },
+                { "mot": "TONGA", "definition": "Le royaume où le temps commence" },
+                { "mot": "KIRIBATI", "definition": "Pays qui risque de disparaître sous l'eau" },
+                { "mot": "TUVALU", "definition": "Vit de la vente de son nom de domaine .tv" },
+                { "mot": "NAURU", "definition": "La plus petite république, jadis riche de phosphate" },
+                { "mot": "PALAOS", "definition": "Îles champignons et lac aux méduses" },
+                { "mot": "MICRONESIE", "definition": "Des milliers de petites îles éparpillées" },
+                { "mot": "MARSHALL", "definition": "Îles connues pour les essais nucléaires" },
+                { "mot": "BENIN", "definition": "Ancien royaume du Dahomey, aujourd'hui petit pays d'Afrique de l'Ouest." },
+                { "mot": "GEORGIE", "definition": "Pays du Caucase, autrefois république de l'Union soviétique." },
+                { "mot": "LIECHTENSTEIN", "definition": "Très petite principauté alpine située entre la Suisse et l'Autriche." },
+                { "mot": "ETATSUNIS", "definition": "Grand pays d'Amérique du Nord devenu indépendant en 1776." },
+                { "mot": "FRANCE", "definition": "Pays d'Europe de l'Ouest marqué par la Révolution de 1789." }
+            ],
             "capitales": [
-                { "mot": "PARIS", "definition": "France" }, { "mot": "LONDRES", "definition": "Royaume-Uni" },
-                { "mot": "BERLIN", "definition": "Allemagne" }, { "mot": "MADRID", "definition": "Espagne" },
-                { "mot": "ROME", "definition": "Italie" }, { "mot": "TOKYO", "definition": "Japon" },
-                { "mot": "PEKIN", "definition": "Chine" }, { "mot": "MOSCOU", "definition": "Russie" },
-                { "mot": "OTTAWA", "definition": "Canada" }, { "mot": "BRASILIA", "definition": "Brésil" },
-                { "mot": "DAKAR", "definition": "Sénégal" }, { "mot": "CAIRE", "definition": "Egypte" }
-            ]
+                { "mot": "PARIS", "definition": "Capitale de la France" },
+                { "mot": "LONDRES", "definition": "Capitale du Royaume-Uni" },
+                { "mot": "BERLIN", "definition": "Capitale de l'Allemagne" },
+                { "mot": "MADRID", "definition": "Capitale de l'Espagne" },
+                { "mot": "ROME", "definition": "Capitale de l'Italie" },
+                { "mot": "LISBONNE", "definition": "Capitale du Portugal" },
+                { "mot": "BRUXELLES", "definition": "Capitale de la Belgique" },
+                { "mot": "AMSTERDAM", "definition": "Capitale des Pays-Bas" },
+                { "mot": "VIENNE", "definition": "Capitale de l'Autriche" },
+                { "mot": "BERNE", "definition": "Capitale de la Suisse" },
+                { "mot": "ATHENES", "definition": "Capitale de la Grèce" },
+                { "mot": "MOSCOU", "definition": "Capitale de la Russie" },
+                { "mot": "KIEV", "definition": "Capitale de l'Ukraine" },
+                { "mot": "VARSOVIE", "definition": "Capitale de la Pologne" },
+                { "mot": "PRAGUE", "definition": "Capitale de la Tchéquie" },
+                { "mot": "BUDAPEST", "definition": "Capitale de la Hongrie" },
+                { "mot": "DUBLIN", "definition": "Capitale de l'Irlande" },
+                { "mot": "OSLO", "definition": "Capitale de la Norvège" },
+                { "mot": "STOCKHOLM", "definition": "Capitale de la Suède" },
+                { "mot": "COPENHAGUE", "definition": "Capitale du Danemark" },
+                { "mot": "HELSINKI", "definition": "Capitale de la Finlande" },
+                { "mot": "REYKJAVIK", "definition": "Capitale de l'Islande" },
+                { "mot": "WASHINGTON", "definition": "Capitale des États-Unis" },
+                { "mot": "OTTAWA", "definition": "Capitale du Canada" },
+                { "mot": "MEXICO", "definition": "Capitale du Mexique" },
+                { "mot": "BRASILIA", "definition": "Capitale du Brésil" },
+                { "mot": "BUENOSAIRES", "definition": "Capitale de l'Argentine" },
+                { "mot": "SANTIAGO", "definition": "Capitale du Chili" },
+                { "mot": "BOGOTA", "definition": "Capitale de la Colombie" },
+                { "mot": "LIMA", "definition": "Capitale du Pérou" },
+                { "mot": "CARACAS", "definition": "Capitale du Venezuela" },
+                { "mot": "QUITO", "definition": "Capitale de l'Équateur" },
+                { "mot": "LAPAZE", "definition": "Capitale administrative de la Bolivie" },
+                { "mot": "SUCRE", "definition": "Capitale constitutionnelle de la Bolivie" },
+                { "mot": "MONTEVIDEO", "definition": "Capitale de l'Uruguay" },
+                { "mot": "ASUNCION", "definition": "Capitale du Paraguay" },
+                { "mot": "LAHAVANE", "definition": "Capitale de Cuba" },
+                { "mot": "KINGSTON", "definition": "Capitale de la Jamaïque" },
+                { "mot": "PORTAUPRINCE", "definition": "Capitale d'Haïti" },
+                { "mot": "PEKIN", "definition": "Capitale de la Chine" },
+                { "mot": "TOKYO", "definition": "Capitale du Japon" },
+                { "mot": "SEOUL", "definition": "Capitale de la Corée du Sud" },
+                { "mot": "PYONGYANG", "definition": "Capitale de la Corée du Nord" },
+                { "mot": "BANGKOK", "definition": "Capitale de la Thaïlande" },
+                { "mot": "HANOI", "definition": "Capitale du Vietnam" },
+                { "mot": "JAKARTA", "definition": "Capitale de l'Indonésie" },
+                { "mot": "MANILLE", "definition": "Capitale des Philippines" },
+                { "mot": "NEWDELHI", "definition": "Capitale de l'Inde" },
+                { "mot": "ISLAMABAD", "definition": "Capitale du Pakistan" },
+                { "mot": "KABOUL", "definition": "Capitale de l'Afghanistan" },
+                { "mot": "TEHERAN", "definition": "Capitale de l'Iran" },
+                { "mot": "BAGDAD", "definition": "Capitale de l'Irak" },
+                { "mot": "DAMAS", "definition": "Capitale de la Syrie" },
+                { "mot": "BEYROUTH", "definition": "Capitale du Liban" },
+                { "mot": "AMMAN", "definition": "Capitale de la Jordanie" },
+                { "mot": "JERUSALEM", "definition": "Ville sainte et capitale d'Israël" },
+                { "mot": "RIYAD", "definition": "Capitale de l'Arabie saoudite" },
+                { "mot": "ANKARA", "definition": "Capitale de la Turquie" },
+                { "mot": "LECAIRE", "definition": "Capitale de l'Égypte" },
+                { "mot": "RABAT", "definition": "Capitale du Maroc" },
+                { "mot": "ALGER", "definition": "Capitale de l'Algérie" },
+                { "mot": "TUNIS", "definition": "Capitale de la Tunisie" },
+                { "mot": "TRIPOLI", "definition": "Capitale de la Libye" },
+                { "mot": "DAKAR", "definition": "Capitale du Sénégal" },
+                { "mot": "NAIROBI", "definition": "Capitale du Kenya" },
+                { "mot": "ADDISABEBA", "definition": "Capitale de l'Éthiopie" },
+                { "mot": "ABUJA", "definition": "Capitale du Nigéria" },
+                { "mot": "ACCRA", "definition": "Capitale du Ghana" },
+                { "mot": "KINSHASA", "definition": "Capitale de la RDC (Congo)" },
+                { "mot": "LUANDA", "definition": "Capitale de l'Angola" },
+                { "mot": "PRETORIA", "definition": "Capitale administrative de l'Afrique du Sud" },
+                { "mot": "CAPETOWN", "definition": "Capitale législative de l'Afrique du Sud (Le Cap)" },
+                { "mot": "ANTANANARIVO", "definition": "Capitale de Madagascar" },
+                { "mot": "CANBERRA", "definition": "Capitale de l'Australie" },
+                { "mot": "WELLINGTON", "definition": "Capitale de la Nouvelle-Zélande" },
+                { "mot": "SUVA", "definition": "Capitale des Fidji" },
+                { "mot": "BUCAREST", "definition": "Capitale de la Roumanie" },
+                { "mot": "SOFIA", "definition": "Capitale de la Bulgarie" },
+                { "mot": "BELGRADE", "definition": "Capitale de la Serbie" },
+                { "mot": "ZAGREB", "definition": "Capitale de la Croatie" },
+                { "mot": "LJUBLJANA", "definition": "Capitale de la Slovénie" },
+                { "mot": "BRATISLAVA", "definition": "Capitale de la Slovaquie" },
+                { "mot": "TIRANA", "definition": "Capitale de l'Albanie" },
+                { "mot": "SARAJEVO", "definition": "Capitale de la Bosnie-Herzégovine" },
+                { "mot": "SKOPJE", "definition": "Capitale de la Macédoine du Nord" },
+                { "mot": "VALETTE", "definition": "Capitale de Malte" },
+                { "mot": "NICOSIE", "definition": "Capitale de Chypre" },
+                { "mot": "TALLINN", "definition": "Capitale de l'Estonie" },
+                { "mot": "RIGA", "definition": "Capitale de la Lettonie" },
+                { "mot": "VILNIUS", "definition": "Capitale de la Lituanie" },
+                { "mot": "MINSK", "definition": "Capitale de la Biélorussie" },
+                { "mot": "CHISINAU", "definition": "Capitale de la Moldavie" },
+                { "mot": "EREVAN", "definition": "Capitale de l'Arménie" },
+                { "mot": "BAKOU", "definition": "Capitale de l'Azerbaïdjan" },
+                { "mot": "TBILISI", "definition": "Capitale de la Géorgie" },
+                { "mot": "ASTANA", "definition": "Capitale du Kazakhstan" },
+                { "mot": "TACHKENT", "definition": "Capitale de l'Ouzbékistan" },
+                { "mot": "BICHKEK", "definition": "Capitale du Kirghizistan" },
+                { "mot": "DOUCHANBE", "definition": "Capitale du Tadjikistan" },
+                { "mot": "ACHGABAT", "definition": "Capitale du Turkménistan" },
+                { "mot": "OULANBATOR", "definition": "Capitale de la Mongolie" },
+                { "mot": "KATMANDOU", "definition": "Capitale du Népal" },
+                { "mot": "THIMPHOU", "definition": "Capitale du Bhoutan" },
+                { "mot": "DHAKA", "definition": "Capitale du Bangladesh" },
+                { "mot": "COLOMBO", "definition": "Capitale économique du Sri Lanka" },
+                { "mot": "KUALALUMPUR", "definition": "Capitale de la Malaisie" },
+                { "mot": "SINGAPOUR", "definition": "Cité-État et capitale d'elle-même" },
+                { "mot": "PHNOMPENH", "definition": "Capitale du Cambodge" },
+                { "mot": "VIENTIANE", "definition": "Capitale du Laos" },
+                { "mot": "DOHA", "definition": "Capitale du Qatar" },
+                { "mot": "MASCATE", "definition": "Capitale d'Oman" }
+            ],
+            "objets_et_mesures": [
+    {"mot": "COUDEE", "definition": "Mesure utilisée pour construire l'arche de Noé (Genèse 6:15)"},
+    {"mot": "SICLE", "definition": "Abraham pesa 400 pièces de ce poids pour un champ (Genèse 23:16)"},
+    {"mot": "TALENT", "definition": "Parabole où un maître confie ses biens (Matthieu 25:15)"},
+    {"mot": "DENIER", "definition": "On a montré cette pièce à l'effigie de César à Jésus (Luc 20:24)"},
+    {"mot": "DRAP", "definition": "Joseph acheta ce lin fin pour envelopper Jésus (Marc 15:46)"},
+    {"mot": "BAT", "definition": "Salomon donna 20 000 mesures d'huile à Hiram (2 Chroniques 2:10)"},
+    {"mot": "KOR", "definition": "Dette de 100 mesures de blé réduite à 80 (Luc 16:7)"},
+    {"mot": "EPHAH", "definition": "Unité pour mesurer la fleur de farine (Lévitique 6:20)"},
+    {"mot": "HIN", "definition": "Un quart de cette mesure de vin pour l'agneau (Exode 29:40)"},
+    {"mot": "OMER", "definition": "Chaque Israélite ramassait cette quantité de manne (Exode 16:16)"},
+    {"mot": "LOG", "definition": "La plus petite mesure d'huile pour la purification (Lévitique 14:10)"},
+    {"mot": "STADE", "definition": "Emmaüs était à 60 de ces unités de Jérusalem (Luc 24:13)"},
+    {"mot": "HARPE", "definition": "David en jouait pour apaiser Saül (1 Samuel 16:23)"},
+    {"mot": "LYRE", "definition": "Instrument pour louer Jéhovah (Psaume 33:2)"},
+    {"mot": "TROMPETTE", "definition": "Sept prêtres en sonnèrent devant Jéricho (Josué 6:4)"},
+    {"mot": "COR", "definition": "Instrument en corne de bélier pour le Jubilé (Lévitique 25:9)"},
+    {"mot": "CHANDELIER", "definition": "En or pur, placé dans le Saint (Exode 25:31)"},
+    {"mot": "AUTEL", "definition": "Noé en bâtit un après le Déluge (Genèse 8:20)"},
+    {"mot": "ENCENSOIR", "definition": "Rempli de braises ardentes par le prêtre (Lévitique 16:12)"},
+    {"mot": "OURIM", "definition": "Placé dans le pectoral pour le jugement (Exode 28:30)"},
+    {"mot": "THOUIMMIM", "definition": "Tiré au sort avec l'Ourim par Saül (1 Samuel 14:41)"},
+    {"mot": "EPHOD", "definition": "Gédéon en fit un qui devint un piège (Juges 8:27)"},
+    {"mot": "PECTORAL", "definition": "Orné de quatre rangées de pierres (Exode 28:17)"},
+    {"mot": "MANTEAU", "definition": "Déchiré par Job en signe de deuil (Job 1:20)"},
+    {"mot": "SANDALE", "definition": "Moïse dut les ôter devant le buisson (Exode 3:5)"},
+    {"mot": "BATON", "definition": "A fleurit pour la maison de Lévi (Nombres 17:8)"},
+    {"mot": "FRONDE", "definition": "Arme des 700 gauchers de Benjamin (Juges 20:16)"},
+    {"mot": "FILET", "definition": "Les disciples lachèrent tout pour suivre Jésus (Marc 1:18)"},
+    {"mot": "JOUG", "definition": "Prenez sur vous mon [mot], car il est doux (Matthieu 11:29)"},
+    {"mot": "LAMPE", "definition": "Ta parole est une [mot] pour mon pied (Psaume 119:105)"},
+    {"mot": "HUILE", "definition": "La veuve n'en avait qu'un peu dans une jarre (1 Rois 17:12)"},
+    {"mot": "VIN", "definition": "Paul conseille d'en prendre un peu pour l'estomac (1 Timothée 5:23)"},
+    {"mot": "PAIN", "definition": "L'homme ne doit pas vivre de [mot] seulement (Matthieu 4:4)"},
+    {"mot": "LEVAIN", "definition": "Méfiez-vous du [mot] des pharisiens (Luc 12:1)"},
+    {"mot": "SEL", "definition": "La femme de Lot devint une colonne de [mot] (Genèse 19:26)"},
+    {"mot": "MYRRHE", "definition": "Nicodème apporta un mélange de [mot] et d'aloès (Jean 19:39)"},
+    {"mot": "OR", "definition": "Le roi Neboukadnetsar fit une statue de ce métal (Daniel 3:1)"},
+    {"mot": "ARGENT", "definition": "Joseph fut vendu pour 20 pièces de ce métal (Genèse 37:28)"},
+    {"mot": "CUIVRE", "definition": "Le serpent brûlant fabriqué par Moïse (Nombres 21:9)"},
+    {"mot": "FER", "definition": "Les chars de Sisera avaient des faux en [mot] (Juges 4:3)"},
+    {"mot": "PIERRE", "definition": "Jésus dit que celles-ci crieraient (Luc 19:40)"},
+    {"mot": "ROULEAU", "definition": "Jésus déroula le [mot] du prophète Isaïe (Luc 4:17)"},
+    {"mot": "COUPE", "definition": "Jésus prit une [mot] après le repas (Luc 22:20)"},
+    {"mot": "BASSIN", "definition": "Jésus versa de l'eau dedans pour laver les pieds (Jean 13:5)"},
+    {"mot": "EPONGE", "definition": "Remplie de vin aigre au bout d'un roseau (Matthieu 27:48)"},
+    {"mot": "CLOU", "definition": "Yaël enfonça un piquet de tente dans sa tempe (Juges 4:21)"},
+    {"mot": "DRACHME", "definition": "Pièce d'argent perdue par une femme (Luc 15:8)"},
+    {"mot": "MINE", "definition": "Le noble donna 10 [mot] à 10 esclaves (Luc 19:13)"},
+    {"mot": "AIGUILLON", "definition": "Shamgar tua 600 Philistins avec un [mot] à bovins (Juges 3:31)"},
+    {"mot": "MEULE", "definition": "Une femme lança une [mot] sur Abimélek (Juges 9:53)"},
+    {"mot": "CITERNE", "definition": "Jérémie s'enfonça dans la boue de celle-ci (Jérémie 38:6)"},
+    {"mot": "TENTE", "definition": "Jael invita Sisera à entrer dans sa [mot] (Juges 4:18)"},
+    {"mot": "ARCHE", "definition": "Les Philistins capturèrent l'[mot] de Dieu (1 Samuel 4:11)"},
+    {"mot": "MANNE", "definition": "Cessa de tomber quand ils mangèrent du pays (Josué 5:12)"},
+    {"mot": "BOUCLIER", "definition": "Prenez le grand [mot] de la foi (Éphésiens 6:16)"},
+    {"mot": "EPEE", "definition": "La parole de Dieu est plus tranchante qu'une [mot] (Hébreux 4:12)"},
+    {"mot": "CASQUE", "definition": "Acceptez le [mot] du salut (Éphésiens 6:17)"},
+    {"mot": "CEINTURE", "definition": "Jean portait une [mot] de cuir autour des reins (Marc 1:6)"},
+    {"mot": "GOURDE", "definition": "Agar partit avec du pain et une [mot] d'eau (Genèse 21:14)"},
+    {"mot": "RIDEAU", "definition": "Le [mot] du sanctuaire se déchira en deux (Matthieu 27:51)"}
+]
+
         };
 
-        let currentPack = "tech";
-        // Ajout de currentDirection pour gérer le sens de frappe
-        let gameState = {
-            grid: [],
-            placed: [],
-            score: 0,
-            mode: 'random',
-            activeCell: null,
-            currentDirection: 'H',
-            penalty: 0  // <--- AJOUTEZ CECI
+        /* --- CONFIGURATION --- */
+        const DIFFICULTIES = {
+            'easy': { label: 'Facile', size: 10, words: 8, multiplier: 0.8 },
+            'normal': { label: 'Normal', size: 15, words: 12, multiplier: 1.0 },
+            'hard': { label: 'Difficile', size: 18, words: 20, multiplier: 1.5 }
         };
+
+        const COLOR_THEMES = {
+            "violet": { primary: "#6366f1", bg: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)", green: "#22c55e" },
+            "ocean": { primary: "#0ea5e9", bg: "linear-gradient(135deg, #0c4a6e 0%, #075985 100%)", green: "#4ade80" },
+            "nature": { primary: "#10b981", bg: "linear-gradient(135deg, #064e3b 0%, #14532d 100%)", green: "#a3e635" },
+            "sunset": { primary: "#f59e0b", bg: "linear-gradient(135deg, #7c2d12 0%, #9a3412 100%)", green: "#fbbf24" },
+            "neon": { primary: "#d946ef", bg: "linear-gradient(135deg, #4a044e 0%, #701a75 100%)", green: "#f472b6" }
+        };
+
+        const ACHIEVEMENTS = [
+            { id: 'baby_steps', tier: 'bronze', icon: '🐣', title: 'Premiers Pas', desc: 'Gagner 1 partie' },
+            { id: 'warm_up', tier: 'bronze', icon: '☕', title: 'Échauffement', desc: 'Gagner 5 parties' },
+            { id: 'apprentice', tier: 'silver', icon: '🎓', title: 'Apprenti', desc: 'Gagner 10 parties' },
+            { id: 'regular', tier: 'silver', icon: '📅', title: 'Habitué', desc: 'Jouer 3 jours de suite' },
+            { id: 'addict', tier: 'gold', icon: '🔥', title: 'Accro', desc: 'Jouer 7 jours de suite' },
+            { id: 'runner', tier: 'bronze', icon: '👟', title: 'Coureur', desc: 'Gagner en moins de 3 min' },
+            { id: 'sprinter', tier: 'silver', icon: '⚡', title: 'Sprinter', desc: 'Gagner en moins de 2 min' },
+            { id: 'flash', tier: 'gold', icon: '🚀', title: 'The Flash', desc: 'Gagner en moins de 60 sec' },
+            { id: 'light_speed', tier: 'platinum', icon: '💫', title: 'Vitesse Lumière', desc: 'Gagner en moins de 30 sec' },
+            { id: 'reader', tier: 'bronze', icon: '📖', title: 'Lecteur', desc: 'Trouver 50 mots' },
+            { id: 'writer', tier: 'silver', icon: '✍️', title: 'Écrivain', desc: 'Trouver 100 mots' },
+            { id: 'poet', tier: 'gold', icon: '📜', title: 'Poète', desc: 'Trouver 500 mots' },
+            { id: 'dictionary', tier: 'platinum', icon: '📚', title: 'Dictionnaire', desc: 'Trouver 1000 mots' },
+            { id: 'clean', tier: 'bronze', icon: '✨', title: 'Propre', desc: '1 partie sans indice' },
+            { id: 'sharp', tier: 'silver', icon: '🔪', title: 'Affûté', desc: '5 parties sans indice' },
+            { id: 'eagle_eye', tier: 'gold', icon: '👁️', title: 'Oeil de Lynx', desc: '20 parties sans indice' },
+            { id: 'oracle', tier: 'platinum', icon: '🔮', title: 'L\'Oracle', desc: '50 parties sans indice' },
+            { id: 'brave', tier: 'bronze', icon: '🛡️', title: 'Brave', desc: 'Gagner en mode Normal' },
+            { id: 'knight', tier: 'silver', icon: '⚔️', title: 'Chevalier', desc: 'Gagner 5 fois en Normal' },
+            { id: 'hero', tier: 'gold', icon: '🦁', title: 'Héros', desc: 'Gagner en mode Difficile' },
+            { id: 'legend', tier: 'platinum', icon: '👑', title: 'Légende', desc: 'Gagner 10 fois en Difficile' },
+            { id: 'tech_fan', tier: 'bronze', icon: '💻', title: 'Geek', desc: 'Finir 3 grilles Tech' },
+            { id: 'zoo_keeper', tier: 'bronze', icon: '🦁', title: 'Gardien de Zoo', desc: 'Finir 3 grilles Animaux' },
+            { id: 'traveler', tier: 'bronze', icon: '✈️', title: 'Voyageur', desc: 'Finir 3 grilles Capitales' },
+            { id: 'polymath', tier: 'gold', icon: '🎨', title: 'Polymath', desc: 'Gagner dans tous les thèmes' },
+            { id: 'level_5', tier: 'bronze', icon: '⭐', title: 'Niveau 5', desc: 'Atteindre le niveau 5' },
+            { id: 'level_10', tier: 'silver', icon: '🌟', title: 'Niveau 10', desc: 'Atteindre le niveau 10' },
+            { id: 'level_20', tier: 'gold', icon: '💫', title: 'Niveau 20', desc: 'Atteindre le niveau 20' },
+            { id: 'night_owl', tier: 'bronze', icon: '🦉', title: 'Oiseau de Nuit', desc: 'Gagner après 22h' },
+            { id: 'early_bird', tier: 'bronze', icon: '🐦', title: 'Lève-tôt', desc: 'Gagner avant 8h' },
+            { id: 'marathon', tier: 'gold', icon: '🏃', title: 'Marathonien', desc: 'Jouer 30 jours de suite' },
+            { id: 'century', tier: 'platinum', icon: '💯', title: 'Centenaire', desc: 'Jouer 100 parties' }
+        ];
+
+        /* --- ETAT DU JEU --- */
+        let currentPack = "tech";
+        let currentDiff = 'normal';
+        let gameState = { grid: [], placed: [], score: 0, penalty: 0, mode: 'random', activeCell: null, currentDirection: 'H' };
+        let gameTimerInterval;
+        let startTime;
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // --- INIT ---
+        /* --- INITIALISATION --- */
         function init() {
+            // Chargement des préférences
+            const savedTheme = localStorage.getItem('cw_color_theme') || 'violet';
+            applyTheme(savedTheme);
+
             updateXP();
             updateStreakUI();
-            initTheme();
-            renderThemeSelector();
-            renderKeyboard();
-            setupPhysicalKeyboard(); // Activation du clavier physique
-            initDiffUI();
+            initUI();
+            setupPhysicalKeyboard();
 
+            checkDailyStatus();
+
+            // Check URL pour grille partagée
             const params = new URLSearchParams(window.location.search);
             if (params.has('grid')) {
                 try {
@@ -633,27 +1762,38 @@ textarea { width: 100%; height: 150px; background: rgba(0,0,0,0.3); color: white
             }
         }
 
-        function renderThemeSelector() {
-            const container = document.getElementById('themeSelector');
-            container.innerHTML = '';
+        function initUI() {
+            // Thèmes Mots
+            const themeCont = document.getElementById('themeSelector');
+            themeCont.innerHTML = '';
             Object.keys(PACKS).forEach(key => {
                 const btn = document.createElement('div');
                 btn.className = `theme-chip ${key === currentPack ? 'active' : ''}`;
                 btn.innerText = key.charAt(0).toUpperCase() + key.slice(1);
-                btn.onclick = () => {
-                    currentPack = key;
-                    renderThemeSelector();
-                };
-                container.appendChild(btn);
+                btn.onclick = () => { currentPack = key; initUI(); };
+                themeCont.appendChild(btn);
             });
+
+            // Difficulté
+            const diffCont = document.getElementById('diffSelector');
+            diffCont.innerHTML = '';
+            Object.keys(DIFFICULTIES).forEach(k => {
+                const btn = document.createElement('div');
+                btn.className = `diff-btn ${k === currentDiff ? 'active' : ''}`;
+                btn.innerText = DIFFICULTIES[k].label;
+                btn.onclick = () => { currentDiff = k; initUI(); };
+                diffCont.appendChild(btn);
+            });
+
+            // Couleurs
+            renderColorPicker(localStorage.getItem('cw_color_theme') || 'violet');
+            renderKeyboard();
         }
-        let gameTimerInterval;
-        let startTime;
-        // --- GAME ENGINE SÉCURISÉ ---
+
+        /* --- GAME ENGINE --- */
         function startGame(mode, data = null, attempts = 0) {
-            // Sécurité anti-crash : Si on a essayé 20 fois sans succès, on arrête.
             if (attempts > 20) {
-                alert("Oups ! Impossible de générer une grille valide avec ces mots.\n\nConseils :\n1. Ajoutez plus de mots (idéalement 10+)\n2. Vérifiez qu'ils ont des lettres communes\n3. Évitez les mots trop longs (> 15 lettres)");
+                alert("Impossible de générer une grille valide. Essayez avec plus de mots !");
                 goToMenu();
                 return;
             }
@@ -661,77 +1801,74 @@ textarea { width: 100%; height: 150px; background: rgba(0,0,0,0.3); color: white
             gameState.mode = mode;
             gameState.score = 0;
             gameState.penalty = 0;
-            document.getElementById('timerContainer').style.display = 'block';
+            gameState.activeCell = null;
+            gameState.currentDirection = 'H';
+
+            // Reset UI
             document.getElementById('scoreDisplay').innerText = '0';
-            // RECUPERER CONFIG DIFFICULTÉ
+            document.getElementById('timerContainer').style.display = 'block';
+            document.getElementById('activeClueBar').classList.remove('visible');
+
+            // Config Difficulté
             const conf = DIFFICULTIES[currentDiff];
-            const targetWords = conf.words;
-
             let words = data || [...PACKS[currentPack]];
-             gameState.activeCell = null; // Reset
-    document.getElementById('activeClueBar').classList.remove('visible'); // Cacher
 
-            // Préparation de la liste de mots
+            // Préparation Mots
             if (mode === 'daily') {
-                let allWords = [...PACKS.tech, ...PACKS.animaux, ...PACKS.capitales];
+                let allWords = [...PACKS.tech, ...PACKS.capitales, ...PACKS.animaux_bibliques, ...PACKS.lieux_bibliques, ...PACKS.objets_et_mesures, ...PACKS.personnages_bibliques];
                 const date = new Date().toISOString().split('T')[0];
-                // On ajoute 'attempts' au seed pour varier si ça échoue
-                const rng = RNG.create(date + attempts);
-                words = RNG.shuffle(allWords, rng).slice(0, targetWords);
+                const rng = RNG.create(date + attempts); // Seed stable mais variable par tentative
+                words = RNG.shuffle(allWords, rng).slice(0, conf.words + 5);
             } else if (mode === 'random') {
-                words = words.sort(() => 0.5 - Math.random()).slice(0, targetWords);
+                words = words.sort(() => 0.5 - Math.random()).slice(0, conf.words + 5);
             }
 
+            // Timer
             if (gameTimerInterval) clearInterval(gameTimerInterval);
             startTime = Date.now();
             gameTimerInterval = setInterval(updateTimer, 1000);
 
-            // Tentative de génération
+            // Génération
             if (generateGrid(words, conf.size)) {
-                // SUCCÈS
                 showScreen('screen-game');
                 renderGrid();
                 renderDefs();
             } else {
-                // ÉCHEC : On réessaie en augmentant le compteur
-                console.log("Tentative échouée, nouvel essai...", attempts);
+                console.log("Retry generation...", attempts);
                 startGame(mode, data, attempts + 1);
             }
         }
 
-        // --- ALGO GENERATION ---
-        function generateGrid(list, size = 15) {
+        function generateGrid(list, size) {
             for (let attempt = 0; attempt < 5; attempt++) {
                 gameState.grid = Array(size).fill().map(() => Array(size).fill(null));
                 gameState.placed = [];
 
-                let wordPool = JSON.parse(JSON.stringify(list));
-                wordPool.sort((a, b) => b.mot.length - a.mot.length);
+                let wordPool = JSON.parse(JSON.stringify(list)).sort((a, b) => b.mot.length - a.mot.length);
 
-                const firstWord = wordPool[0];
-                const startCol = Math.floor((size - firstWord.mot.length) / 2);
-                const startRow = Math.floor(size / 2);
-                placeWordOnGrid(firstWord, startRow, startCol, 'H');
+                // Premier mot au centre
+                const first = wordPool[0];
+                if (!first) return false;
+                placeWordOnGrid(first, Math.floor(size / 2), Math.floor((size - first.mot.length) / 2), 'H');
                 wordPool.shift();
 
                 let stuckCount = 0;
                 while (wordPool.length > 0 && stuckCount < 50) {
-                    let placedThisRound = false;
+                    let placed = false;
                     for (let i = 0; i < wordPool.length; i++) {
-                        const wordObj = wordPool[i];
-                        const possibleSpots = findIntersections(wordObj.mot, size);
-
-                        if (possibleSpots.length > 0) {
-                            const spot = possibleSpots[Math.floor(Math.random() * possibleSpots.length)];
-                            placeWordOnGrid(wordObj, spot.row, spot.col, spot.dir);
+                        const w = wordPool[i];
+                        const spots = findIntersections(w.mot, size);
+                        if (spots.length > 0) {
+                            const spot = spots[Math.floor(Math.random() * spots.length)];
+                            placeWordOnGrid(w, spot.row, spot.col, spot.dir);
                             wordPool.splice(i, 1);
-                            placedThisRound = true;
+                            placed = true;
                             break;
                         }
                     }
-                    if (!placedThisRound) stuckCount++;
+                    if (!placed) stuckCount++;
                 }
-                if (gameState.placed.length >= 5) return true;
+                if (gameState.placed.length >= Math.min(5, list.length)) return true;
             }
             return false;
         }
@@ -739,10 +1876,10 @@ textarea { width: 100%; height: 150px; background: rgba(0,0,0,0.3); color: white
         function findIntersections(word, size) {
             let spots = [];
             for (let i = 0; i < word.length; i++) {
-                const letter = word[i];
+                const char = word[i];
                 for (let r = 0; r < size; r++) {
                     for (let c = 0; c < size; c++) {
-                        if (gameState.grid[r][c] === letter) {
+                        if (gameState.grid[r][c] === char) {
                             if (isValidPlacement(word, r, c - i, 'H', size)) spots.push({ row: r, col: c - i, dir: 'H' });
                             if (isValidPlacement(word, r - i, c, 'V', size)) spots.push({ row: r - i, col: c, dir: 'V' });
                         }
@@ -757,6 +1894,7 @@ textarea { width: 100%; height: 150px; background: rgba(0,0,0,0.3); color: white
             if (dir === 'H' && (col + word.length > size)) return false;
             if (dir === 'V' && (row + word.length > size)) return false;
 
+            // Vérif Voisins (Isolation)
             if (dir === 'H') {
                 if (col > 0 && gameState.grid[row][col - 1] !== null) return false;
                 if (col + word.length < size && gameState.grid[row][col + word.length] !== null) return false;
@@ -768,11 +1906,12 @@ textarea { width: 100%; height: 150px; background: rgba(0,0,0,0.3); color: white
             for (let i = 0; i < word.length; i++) {
                 const r = dir === 'H' ? row : row + i;
                 const c = dir === 'H' ? col + i : col;
-                const cellContent = gameState.grid[r][c];
+                const cell = gameState.grid[r][c];
 
-                if (cellContent !== null && cellContent !== word[i]) return false;
+                if (cell !== null && cell !== word[i]) return false; // Collision
 
-                if (cellContent === null) {
+                // Si case vide, vérifier qu'on ne colle pas d'autres mots latéralement
+                if (cell === null) {
                     if (dir === 'H') {
                         if (r > 0 && gameState.grid[r - 1][c] !== null) return false;
                         if (r < size - 1 && gameState.grid[r + 1][c] !== null) return false;
@@ -794,51 +1933,45 @@ textarea { width: 100%; height: 150px; background: rgba(0,0,0,0.3); color: white
             gameState.placed.push({ ...wordObj, r: row, c: col, dir, num: gameState.placed.length + 1 });
         }
 
-        // --- RENDER ---
+        /* --- RENDERING --- */
         function renderGrid() {
             const container = document.getElementById('gameGrid');
-            // --- AJOUTER CETTE LIGNE ---
-            // Adapte le CSS grid au nombre de colonnes (10, 15 ou 18)
             const gridSize = DIFFICULTIES[currentDiff].size;
             container.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-            // ---------------------------
-
-            
             container.innerHTML = '';
+
             for (let r = 0; r < gridSize; r++) {
                 for (let c = 0; c < gridSize; c++) {
                     const letter = gameState.grid[r][c];
                     const div = document.createElement('div');
                     div.className = letter ? 'cell-container' : 'cell-container blocked';
-                    if (letter) {
-                        const startWord = gameState.placed.find(w => w.r === r && w.c === c);
 
-if(startWord) {
-    const numSpan = document.createElement('span');
-    numSpan.className = 'cell-number';
-    numSpan.innerText = startWord.num;
-    div.appendChild(numSpan);
-}
+                    if (letter) {
+                        // Numéro (Si n'importe quel mot commence ici)
+                        const startWord = gameState.placed.find(w => w.r === r && w.c === c);
+                        if (startWord) {
+                            const num = document.createElement('span');
+                            num.className = 'cell-number';
+                            num.innerText = startWord.num;
+                            div.appendChild(num);
+                        }
+
                         const input = document.createElement('input');
                         input.className = 'cell';
-                        input.readOnly = true; // On garde readOnly pour éviter le clavier mobile natif
+                        input.readOnly = true; // Mobile Friendly
                         input.dataset.ans = letter;
-                        input.dataset.r = r; input.dataset.c = c;
+                        input.dataset.r = r;
+                        input.dataset.c = c;
 
-                        // Gestion intelligente du clic
                         input.onclick = () => {
-                            // Si on clique sur la case déjà active, on change de direction
                             if (gameState.activeCell === input) {
                                 gameState.currentDirection = gameState.currentDirection === 'H' ? 'V' : 'H';
                             } else {
-                                // Sinon, on essaie de deviner la meilleure direction
-                                // Si le mot est uniquement Horizontal ou uniquement Vertical, on force cette direction
+                                // Smart Direction
                                 const isH = gameState.placed.some(w => w.dir === 'H' && w.r === r && c >= w.c && c < w.c + w.mot.length);
                                 const isV = gameState.placed.some(w => w.dir === 'V' && w.c === c && r >= w.r && r < w.r + w.mot.length);
-
                                 if (isH && !isV) gameState.currentDirection = 'H';
                                 else if (!isH && isV) gameState.currentDirection = 'V';
-                                // Si intersection, on garde la direction précédente par défaut ou H
                             }
                             setActive(input);
                         };
@@ -849,19 +1982,42 @@ if(startWord) {
             }
         }
 
-        function renderDefs() {
-            switchTab(gameState.currentDirection === 'H' ? 'horizontal' : 'vertical');
+        function setActive(input) {
+            if (gameState.activeCell) gameState.activeCell.style.backgroundColor = '';
+            gameState.activeCell = input;
+            input.style.backgroundColor = '#bfdbfe';
+
+            // Trouver le mot actif
+            const r = parseInt(input.dataset.r);
+            const c = parseInt(input.dataset.c);
+            const activeWord = gameState.placed.find(w => {
+                if (gameState.currentDirection === 'H') return w.dir === 'H' && w.r === r && c >= w.c && c < w.c + w.mot.length;
+                else return w.dir === 'V' && w.c === c && r >= w.r && r < w.r + w.mot.length;
+            });
+
+            // Sticky Clue Bar
+            const clueBar = document.getElementById('activeClueBar');
+            if (activeWord) {
+                clueBar.classList.add('visible');
+                document.getElementById('activeClueText').innerHTML = `<strong>${activeWord.num}.</strong> ${activeWord.definition}`;
+                switchTab(gameState.currentDirection === 'H' ? 'horizontal' : 'vertical');
+                highlightDef(activeWord);
+            } else {
+                clueBar.classList.remove('visible');
+            }
         }
+
+        function renderDefs() { switchTab('horizontal'); }
 
         function switchTab(dir) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            // Sélectionne le bon onglet visuellement
-            const tabIndex = dir === 'horizontal' ? 0 : 1;
-            document.querySelectorAll('.tab')[tabIndex].classList.add('active');
+            const idx = dir === 'horizontal' ? 0 : 1;
+            document.querySelectorAll('.tab')[idx].classList.add('active');
 
             const list = document.getElementById('defList');
             list.innerHTML = '';
             const code = dir === 'horizontal' ? 'H' : 'V';
+
             gameState.placed.filter(w => w.dir === code).sort((a, b) => a.num - b.num).forEach(w => {
                 const div = document.createElement('div');
                 div.className = 'def-item';
@@ -876,55 +2032,17 @@ if(startWord) {
             });
         }
 
-        // --- INPUT & NAVIGATION ---
-
-        // NOUVEAU : Gestion du clavier physique
-        function setupPhysicalKeyboard() {
-            document.addEventListener('keydown', (e) => {
-                // Uniquement si on est dans l'écran de jeu
-                if (!document.getElementById('screen-game').classList.contains('active')) return;
-
-                const key = e.key.toUpperCase();
-
-                // Lettres A-Z
-                if (/^[A-Z]$/.test(key)) {
-                    handleKey(key);
-                }
-                // Backspace
-                else if (e.key === 'Backspace') {
-                    handleKey('⌫');
-                }
-                // Enter
-                else if (e.key === 'Enter') {
-                    handleKey('OK');
-                }
-                // Flèches directionnelles
-                else if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-                    e.preventDefault();
-                    handleArrowKey(e.key);
-                }
-            });
-        }
-
-        function handleArrowKey(key) {
-            if (!gameState.activeCell) return;
-            const r = parseInt(gameState.activeCell.dataset.r);
-            const c = parseInt(gameState.activeCell.dataset.c);
-            let next = null;
-
-            if (key === 'ArrowUp') next = document.querySelector(`.cell[data-r="${r - 1}"][data-c="${c}"]`);
-            if (key === 'ArrowDown') next = document.querySelector(`.cell[data-r="${r + 1}"][data-c="${c}"]`);
-            if (key === 'ArrowLeft') next = document.querySelector(`.cell[data-r="${r}"][data-c="${c - 1}"]`);
-            if (key === 'ArrowRight') next = document.querySelector(`.cell[data-r="${r}"][data-c="${c + 1}"]`);
-
-            if (next) {
-                // Si on change de direction explicitement avec les flèches, on met à jour l'état
-                if (key === 'ArrowUp' || key === 'ArrowDown') gameState.currentDirection = 'V';
-                if (key === 'ArrowLeft' || key === 'ArrowRight') gameState.currentDirection = 'H';
-                setActive(next);
+        function highlightDef(w) {
+            document.querySelectorAll('.def-item').forEach(d => d.classList.remove('highlight'));
+            const el = document.getElementById(`def-${w.num}-${w.dir}`);
+            if (el) {
+                el.classList.add('highlight');
+                // Sur PC seulement, on scroll la liste
+                if (window.innerWidth > 900) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
             }
         }
 
+        /* --- INPUT HANDLING --- */
         function renderKeyboard() {
             const kb = document.getElementById('virtual-keyboard');
             kb.innerHTML = '';
@@ -936,179 +2054,114 @@ if(startWord) {
                     const btn = document.createElement('button');
                     btn.className = `kb-key ${k.length > 1 ? 'wide' : ''}`;
                     btn.innerText = k;
-                    btn.onclick = (e) => {
-                        e.stopPropagation(); // Empêche de perdre le focus
-                        handleKey(k);
-                    };
+                    btn.onclick = (e) => { e.stopPropagation(); handleKey(k); };
                     rDiv.appendChild(btn);
                 });
                 kb.appendChild(rDiv);
             });
         }
 
-            function setActive(input) {
-        if(gameState.activeCell) gameState.activeCell.style.backgroundColor = '';
-        gameState.activeCell = input;
-        input.style.backgroundColor = '#bfdbfe';
-        
-        // 1. Trouver le mot actif selon la direction
-        const r = parseInt(input.dataset.r);
-        const c = parseInt(input.dataset.c);
-        const activeWord = gameState.placed.find(w => {
-            if (gameState.currentDirection === 'H') {
-                return w.dir === 'H' && w.r === r && c >= w.c && c < w.c + w.mot.length;
-            } else {
-                return w.dir === 'V' && w.c === c && r >= w.r && r < w.r + w.mot.length;
-            }
-        });
-
-        // 2. Mettre à jour la BULLE FLOTTANTE (Mobile Friendly)
-        const clueBar = document.getElementById('activeClueBar');
-        const clueText = document.getElementById('activeClueText');
-        
-        if (activeWord) {
-            clueBar.classList.add('visible');
-            // Affiche "1. Indice du mot"
-            clueText.innerHTML = `<strong>${activeWord.num}.</strong> ${activeWord.definition}`;
-            
-            // NE PLUS SCROLLER LA LISTE (C'est ça qui était gênant)
-            // On garde juste le highlight visuel dans la liste PC
-            document.querySelectorAll('.def-item').forEach(d => d.classList.remove('highlight'));
-            const listEl = document.getElementById(`def-${activeWord.num}-${activeWord.dir}`);
-            if(listEl) listEl.classList.add('highlight');
-        } else {
-            clueBar.classList.remove('visible');
+        function setupPhysicalKeyboard() {
+            document.addEventListener('keydown', (e) => {
+                if (!document.getElementById('screen-game').classList.contains('active')) return;
+                const k = e.key.toUpperCase();
+                if (/^[A-Z]$/.test(k)) handleKey(k);
+                if (e.key === 'Backspace') handleKey('⌫');
+                if (e.key === 'Enter') checkWin();
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                    e.preventDefault(); handleArrow(e.key);
+                }
+            });
         }
-    }
 
+        function handleArrow(key) {
+            if (!gameState.activeCell) return;
+            const r = parseInt(gameState.activeCell.dataset.r);
+            const c = parseInt(gameState.activeCell.dataset.c);
+            let next = null;
+            if (key === 'ArrowUp') { next = getCell(r - 1, c); gameState.currentDirection = 'V'; }
+            if (key === 'ArrowDown') { next = getCell(r + 1, c); gameState.currentDirection = 'V'; }
+            if (key === 'ArrowLeft') { next = getCell(r, c - 1); gameState.currentDirection = 'H'; }
+            if (key === 'ArrowRight') { next = getCell(r, c + 1); gameState.currentDirection = 'H'; }
+            if (next) setActive(next);
+        }
+
+        function getCell(r, c) { return document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`); }
 
         function handleKey(k) {
             if (!gameState.activeCell) return;
-
-// --- NOUVEAU : EMPÊCHER MODIF SI DÉJÀ VALIDÉ ---
-        // Si la case a la classe "word-completed", on bloque l'écriture
-        // Sauf si c'est une navigation (ArrowKeys gérées ailleurs)
-        if (gameState.activeCell.classList.contains('correct') && k !== 'OK') {
-             // On peut autoriser le déplacement mais pas l'écrasement
-             // Pour l'instant on laisse passer juste pour naviguer,
-             // mais on empêche de changer la valeur
-             if (!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(k)) {
-                 // Si c'est une lettre ou backspace, on ignore ou on avance
-                 moveFocusAfterInput(gameState.activeCell); 
-                 return;
-             }
-        }
-
-
-            playSound('tap');
             const cur = gameState.activeCell;
-            const r = parseInt(cur.dataset.r);
-            const c = parseInt(cur.dataset.c);
+
+            // Bloquer si mot validé (sauf OK)
+            if (cur.classList.contains('correct') && k !== 'OK') {
+                // On avance juste
+                moveCursor(1); return;
+            }
 
             if (k === 'OK') { checkWin(); return; }
-
             if (k === '⌫') {
-                if (cur.value === '') {
-                    // Reculer dans la direction actuelle
-                    const prevR = gameState.currentDirection === 'H' ? r : r - 1;
-                    const prevC = gameState.currentDirection === 'H' ? c - 1 : c;
-                    const prevCell = document.querySelector(`.cell[data-r="${prevR}"][data-c="${prevC}"]`);
-                    if (prevCell) {
-                        setActive(prevCell);
-                        // On ne supprime pas le contenu de la case précédente automatiquement pour éviter les erreurs
-                    }
-                } else {
-                    cur.value = '';
-                    cur.classList.remove('incorrect');
-                }
+                if (cur.value === '') moveCursor(-1);
+                else { cur.value = ''; cur.classList.remove('incorrect'); }
+                playSound('tap');
                 return;
             }
 
-            // Saisie de lettre
+            playSound('tap');
             cur.value = k;
-            checkCompletedWords();
             cur.classList.remove('incorrect');
-
-            // Avancer dans la direction actuelle (gameState.currentDirection)
-            // C'est ici que la magie opère pour les intersections : on force la direction choisie
-            const nextR = gameState.currentDirection === 'H' ? r : r + 1;
-            const nextC = gameState.currentDirection === 'H' ? c + 1 : c;
-
-            const nextCell = document.querySelector(`.cell[data-r="${nextR}"][data-c="${nextC}"]`);
-
-            if (nextCell) {
-                setActive(nextCell);
-            } else {
-                // Fin du mot atteinte ? On checke la victoire potentielle
-                checkWin();
-            }
+            checkCompletedWords();
+            moveCursor(1);
         }
 
-        function highlightDef(r, c) {
-            document.querySelectorAll('.def-item').forEach(d => d.classList.remove('highlight'));
-
-            // On cherche le mot correspondant à la direction active
-            const activeWord = gameState.placed.find(w => {
-                if (gameState.currentDirection === 'H') {
-                    return w.dir === 'H' && w.r === r && c >= w.c && c < w.c + w.mot.length;
-                } else {
-                    return w.dir === 'V' && w.c === c && r >= w.r && r < w.r + w.mot.length;
-                }
-            });
-
-            if (activeWord) {
-                const el = document.getElementById(`def-${activeWord.num}-${activeWord.dir}`);
-                if (el) {
-                    el.classList.add('highlight');
-                    el.scrollIntoView({ behavior: "smooth", block: "nearest" });
-                }
-            }
+        function moveCursor(dir) {
+            const r = parseInt(gameState.activeCell.dataset.r);
+            const c = parseInt(gameState.activeCell.dataset.c);
+            const nextR = gameState.currentDirection === 'H' ? r : r + dir;
+            const nextC = gameState.currentDirection === 'H' ? c + dir : c;
+            const next = getCell(nextR, nextC);
+            if (next) setActive(next);
+            else checkWin(); // Fin de mot/grille
         }
 
-        function updateTimer() {
-            const diff = Math.floor((Date.now() - startTime) / 1000);
-            const m = Math.floor(diff / 60).toString().padStart(2, '0');
-            const s = (diff % 60).toString().padStart(2, '0');
-            document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+        function useHint() {
+            if (gameState.score < 50 && gameState.score > -200) {
+                if (!confirm("Coût: 50 points. Continuer ?")) return;
+            }
+
+            const candidates = Array.from(document.querySelectorAll('.cell')).filter(c => c.value === '' || c.value !== c.dataset.ans);
+            if (candidates.length === 0) return;
+
+            const cell = candidates[Math.floor(Math.random() * candidates.length)];
+            cell.value = cell.dataset.ans;
+            cell.classList.add('correct');
+            cell.style.color = 'var(--primary)';
+
+            gameState.penalty += 50;
+            checkWin();
+            playSound('tap');
         }
 
         function checkCompletedWords() {
             gameState.placed.forEach(w => {
-                // Vérifier si ce mot est complet dans la grille
-                let isComplete = true;
                 let cells = [];
+                let isComplete = true;
                 for (let i = 0; i < w.mot.length; i++) {
                     const r = w.dir === 'H' ? w.r : w.r + i;
                     const c = w.dir === 'H' ? w.c + i : w.c;
-                    const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+                    const cell = getCell(r, c);
                     if (!cell || cell.value !== w.mot[i]) isComplete = false;
                     cells.push(cell);
                 }
-
                 if (isComplete) {
-                    // Si le mot n'était pas déjà marqué comme fini (tu peux stocker ça dans w.finished si tu veux optimiser)
-                    let alreadyAnimated = cells.every(c => c.classList.contains('word-completed-marker'));
-
-                    if (!alreadyAnimated) {
-                    cells.forEach(c => {
-                        c.classList.add('word-completed');
-                        c.classList.add('correct'); // S'assure qu'elle est verte
-                        c.style.background = "#dcfce7";
-                        
-                        // VERROUILLAGE TOTAL
-                        c.readOnly = true; 
-                        // On empêche même le clic si on veut être strict, 
-                        // mais c'est mieux de laisser le clic pour naviguer
-                    });
-
-                        // Barrer la définition
+                    const alreadyDone = cells[0].classList.contains('word-completed');
+                    if (!alreadyDone) {
+                        cells.forEach(c => {
+                            c.classList.add('word-completed');
+                            c.classList.add('correct');
+                            c.readOnly = true;
+                        });
                         const defEl = document.getElementById(`def-${w.num}-${w.dir}`);
-                        if (defEl) {
-                            defEl.style.textDecoration = "line-through";
-                            defEl.style.opacity = "0.5";
-                        }
-
-                        // Petit son satisfaisant
+                        if (defEl) defEl.style.textDecoration = "line-through";
                         playSound('success');
                     }
                 }
@@ -1118,651 +2171,271 @@ if(startWord) {
         function checkWin() {
             const cells = document.querySelectorAll('.cell');
             let correct = 0;
-            let full = true;
             cells.forEach(c => {
-                if (!c.value) full = false;
-                if (c.value === c.dataset.ans) {
-                    correct++;
-                } else if (c.value) {
-                    c.classList.add('incorrect'); c.classList.remove('correct');
-                }
+                if (c.value === c.dataset.ans) correct++;
+                else if (c.value) c.classList.add('incorrect');
             });
+
             gameState.score = (correct * 10) - gameState.penalty;
             document.getElementById('scoreDisplay').innerText = gameState.score;
 
-            if (full && correct === cells.length) {
-                const endTime = Date.now();
-                const duration = Math.floor((endTime - startTime) / 1000); // Temps en secondes
-
-                // APPELER UPDATE STATS
-                updateStats({
-                    time: duration,
-                    wordCount: gameState.placed.length,
-                    penalty: gameState.penalty
-                });
-
-                // Appliquer le multiplicateur d'XP selon la difficulté
-                const diffMult = DIFFICULTIES[currentDiff].multiplier;
-                const finalXpGain = Math.floor(Math.max(10, gameState.score) * diffMult);
-
-
+            if (correct === cells.length) {
                 clearInterval(gameTimerInterval);
                 playSound('win');
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 
-                // On s'assure que le gain d'XP est au minimum de 10 points
-                // Même si le joueur a utilisé 50 indices et a un score de -2000
-                const xpGain = Math.max(10, gameState.score);
+                const duration = Math.floor((Date.now() - startTime) / 1000);
+                updateStats({ time: duration, wordCount: gameState.placed.length, penalty: gameState.penalty });
 
-                document.getElementById('finalScore').innerText = "+" + xpGain + " XP";
+                // Gain XP (Min 10)
+                const diffMult = DIFFICULTIES[currentDiff].multiplier;
+                const xpGain = Math.floor(Math.max(10, gameState.score) * diffMult);
 
-                // Mise à jour de l'XP globale
-                let currentXP = parseInt(localStorage.getItem('cw_xp') || 0);
-                localStorage.setItem('cw_xp', currentXP + xpGain);
+                const curXP = parseInt(localStorage.getItem('cw_xp') || 0);
+                localStorage.setItem('cw_xp', curXP + xpGain);
+                updateXP();
 
                 if (gameState.mode === 'daily') updateStreakLogic();
+
+                document.getElementById('finalScore').innerText = "+" + xpGain + " XP";
                 document.getElementById('victoryModal').style.display = 'flex';
-
-
-                updateXP();
             }
         }
 
-        // --- STREAK & XP (CORRIGÉ) ---
-            function updateStreakLogic() {
-        try {
-            // Méthode universelle pour la date YYYY-MM-DD locale
-            const now = new Date();
-            const offset = now.getTimezoneOffset() * 60000;
-            const localDate = new Date(now.getTime() - offset);
-            const today = localDate.toISOString().split('T')[0];
-
-            const last = localStorage.getItem('cw_last');
-            let streak = parseInt(localStorage.getItem('cw_streak') || 0);
-
-            // Calcul d'hier (Universel)
-            const yesterdayDate = new Date(now);
-            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-            const yOffset = yesterdayDate.getTimezoneOffset() * 60000;
-            const localYesterday = new Date(yesterdayDate.getTime() - yOffset);
-            const yesterday = localYesterday.toISOString().split('T')[0];
-
-            console.log("Streak Debug:", { today, last, yesterday, streak }); // Pour vérifier
-
-            if (last !== today) {
-                if (last === yesterday) {
-                    streak++;
-                } else {
-                    streak = 1;
-                }
-                localStorage.setItem('cw_streak', streak);
-                localStorage.setItem('cw_last', today);
-            }
-            updateStreakUI();
-        } catch (e) {
-            console.error("Erreur Streak:", e);
+        /* --- UTILS & SYSTEM --- */
+        function updateTimer() {
+            const diff = Math.floor((Date.now() - startTime) / 1000);
+            const m = Math.floor(diff / 60).toString().padStart(2, '0');
+            const s = (diff % 60).toString().padStart(2, '0');
+            document.getElementById('timerDisplay').innerText = `${m}:${s}`;
         }
-    }
 
-
-        function updateStreakUI() {
-            const streak = localStorage.getItem('cw_streak') || 0;
-            document.getElementById('streakDisplay').innerText = streak;
-        }
-        // --- MISE A JOUR DE L'XP AMÉLIORÉE ---
         function updateXP() {
             const xp = parseInt(localStorage.getItem('cw_xp') || 0);
-
-            // Formule de niveau : Niv = racine(XP / 500)
-            // Inverse : XP pour Niv N = (N-1)^2 * 500
-
             let lvl = Math.floor(Math.sqrt(xp / 500)) + 1;
 
-            // Calcul des bornes du niveau actuel
-            const xpStartOfLevel = Math.pow(lvl - 1, 2) * 500;
-            const xpForNextLevel = Math.pow(lvl, 2) * 500;
+            const start = Math.pow(lvl - 1, 2) * 500;
+            const end = Math.pow(lvl, 2) * 500;
+            const prog = ((xp - start) / (end - start)) * 100;
 
-            const xpNeeded = xpForNextLevel - xp;
-            const progressInLevel = xp - xpStartOfLevel;
-            const totalForLevel = xpForNextLevel - xpStartOfLevel;
-
-            // Pourcentage
-            const progPercent = (progressInLevel / totalForLevel) * 100;
-
-            // Affichage
             document.getElementById('lvlDisplay').innerText = lvl;
-            document.getElementById('xpFill').style.width = Math.min(100, Math.max(0, progPercent)) + '%';
-
-            // Le texte ergonomique : "120 / 500 (+ 380)"
-            document.getElementById('xpText').innerHTML =
-                `${progressInLevel} / ${totalForLevel} <span style="color:var(--primary)">(-${xpNeeded})</span>`;
+            document.getElementById('xpFill').style.width = Math.max(0, Math.min(100, prog)) + '%';
+            document.getElementById('xpText').innerHTML = `${xp - start} / ${end - start}`;
         }
-        function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-        function goToMenu() {
-    showScreen('screen-menu');
-    document.getElementById('timerContainer').style.display = 'none';
-    
-    // AJOUT : Cacher la bulle
-    const clueBar = document.getElementById('activeClueBar');
-    if(clueBar) clueBar.classList.remove('visible');
-    
-    // AJOUT : Reset sélection
-    gameState.activeCell = null;
-}
-        function showAdmin() { showScreen('screen-admin'); }
-        function closeModal() { document.getElementById('victoryModal').style.display = 'none'; goToMenu(); }
-        function loadCustom() {
-            const input = document.getElementById('jsonInput').value;
+
+        function updateStreakLogic() {
             try {
-                // 1. On essaie de convertir le texte en objets
-                const data = JSON.parse(input);
+                const now = new Date();
+                const offset = now.getTimezoneOffset() * 60000;
+                const today = new Date(now.getTime() - offset).toISOString().split('T')[0];
 
-                // 2. On vérifie qu'il y a assez de mots (Minimum 3 pour croiser)
-                if (!Array.isArray(data) || data.length < 3) {
-                    alert("Erreur : Il faut une liste d'au moins 3 mots pour créer une grille.");
-                    return;
+                const last = localStorage.getItem('cw_last');
+                let streak = parseInt(localStorage.getItem('cw_streak') || 0);
+
+                const yesterdayDate = new Date(now); yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+                const yesterday = new Date(yesterdayDate.getTime() - offset).toISOString().split('T')[0];
+
+                if (last !== today) {
+                    if (last === yesterday) streak++;
+                    else streak = 1;
+                    localStorage.setItem('cw_streak', streak);
+                    localStorage.setItem('cw_last', today);
+                    document.getElementById('streakBonus').innerText = `🔥 Série : ${streak} jours !`;
+                } else {
+                    document.getElementById('streakBonus').innerText = `🔥 Série maintenue !`;
                 }
-
-                // 3. On lance le jeu
-                startGame('custom', data);
-
-            } catch (e) {
-                // Affiche l'erreur technique précise
-                alert("Erreur de syntaxe JSON :\n" + e.message);
-            }
+                updateStreakUI();
+                checkDailyStatus();
+            } catch (e) { }
         }
-        function shareUrl() { try { navigator.clipboard.writeText(window.location.origin + window.location.pathname + "?grid=" + btoa(unescape(encodeURIComponent(document.getElementById('jsonInput').value)))); alert('Lien copié !'); } catch (e) { } }
-        function shareEmoji() { navigator.clipboard.writeText(`CrossWord Master 🧠\nScore: ${gameState.score} XP\n🔥 Streak: ${localStorage.getItem('cw_streak')}\n\n${window.location.href.split('?')[0]}`); alert('Copié !'); }
-        function shareThisGame() {
-            const currentWords = gameState.placed.map(w => ({ mot: w.mot, definition: w.definition }));
-            const json = JSON.stringify(currentWords);
-            const b64 = btoa(unescape(encodeURIComponent(json)));
-            const url = window.location.origin + window.location.pathname + "?grid=" + b64;
-            navigator.clipboard.writeText(url);
-            alert("Lien de défi copié ! Envoie-le à un ami.");
-        }
-        function playSound(type) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const t = audioCtx.currentTime;
-            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-            o.connect(g); g.connect(audioCtx.destination);
-            if (type === 'tap') { o.frequency.setValueAtTime(600, t); g.gain.setValueAtTime(0.05, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05); o.start(t); o.stop(t + 0.05); }
-            else { o.frequency.setValueAtTime(440, t); o.frequency.linearRampToValueAtTime(880, t + 0.3); g.gain.setValueAtTime(0.1, t); g.gain.linearRampToValueAtTime(0, t + 0.3); o.start(t); o.stop(t + 0.3); }
-        }
-        const RNG = {
-            create: function (str) {
-                let h1 = 1779033703, h2 = 3144134277, h3 = 1013904242, h4 = 2773480762;
-                for (let i = 0, k; i < str.length; i++) { k = str.charCodeAt(i); h1 = h2 ^ Math.imul(h1 ^ k, 597399067); h2 = h3 ^ Math.imul(h2 ^ k, 2869860233); h3 = h4 ^ Math.imul(h3 ^ k, 951274213); h4 = h1 ^ Math.imul(h4 ^ k, 2716044179); }
-                h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067); h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233); h3 = Math.imul(h1 ^ (h3 >>> 17), 951274213); h4 = Math.imul(h2 ^ (h4 >>> 19), 2716044179);
-                let a = (h1 ^ h2 ^ h3 ^ h4) >>> 0, b = (h2 ^ h1) >>> 0, c = (h3 ^ h1) >>> 0, d = (h4 ^ h1) >>> 0;
-                return function () { a >>>= 0; b >>>= 0; c >>>= 0; d >>>= 0; var t = (a + b) | 0; a = b ^ b >>> 9; b = c + (c << 3) | 0; c = (c << 21 | c >>> 11); d = d + 1 | 0; t = t + d | 0; c = c + t | 0; return (t >>> 0) / 4294967296; }
-            },
-            shuffle: function (arr, rng) {
-                let cur = arr.length, rand;
-                while (cur != 0) { rand = Math.floor(rng() * cur); cur--;[arr[cur], arr[rand]] = [arr[rand], arr[cur]]; }
-                return arr;
-            }
-        };
+        function updateStreakUI() { document.getElementById('streakDisplay').innerText = localStorage.getItem('cw_streak') || 0; }
 
-        // --- GESTION DES THEMES (COULEURS) ---
-        const COLOR_THEMES = {
-            "violet": {
-                primary: "#6366f1",
-                bg: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
-                green: "#22c55e"
-            },
-            "ocean": {
-                primary: "#0ea5e9",
-                bg: "linear-gradient(135deg, #0c4a6e 0%, #075985 100%)",
-                green: "#4ade80"
-            },
-            "nature": {
-                primary: "#10b981",
-                bg: "linear-gradient(135deg, #064e3b 0%, #14532d 100%)",
-                green: "#a3e635"
-            },
-            "sunset": {
-                primary: "#f59e0b",
-                bg: "linear-gradient(135deg, #7c2d12 0%, #9a3412 100%)",
-                green: "#fbbf24"
-            },
-            "neon": {
-                primary: "#d946ef",
-                bg: "linear-gradient(135deg, #4a044e 0%, #701a75 100%)",
-                green: "#f472b6"
-            }
-        };
-
-        function initTheme() {
-            const saved = localStorage.getItem('cw_color_theme') || 'violet';
-            applyTheme(saved);
-            renderColorPicker(saved);
-        }
-
-        function applyTheme(name) {
-            const theme = COLOR_THEMES[name];
-            const root = document.documentElement;
-
-            // On change les variables CSS dynamiquement
-            root.style.setProperty('--primary', theme.primary);
-            root.style.setProperty('--bg-gradient', theme.bg);
-            root.style.setProperty('--green', theme.green);
-
-            localStorage.setItem('cw_color_theme', name);
-            renderColorPicker(name);
-        }
-
-        function renderColorPicker(activeName) {
-            const container = document.getElementById('themeContainer');
-            if (!container) return;
-            container.innerHTML = '';
-
-            Object.keys(COLOR_THEMES).forEach(key => {
-                const t = COLOR_THEMES[key];
-                const dot = document.createElement('div');
-                dot.className = `theme-dot ${key === activeName ? 'active' : ''}`;
-                dot.style.background = t.primary; // La couleur du rond est la couleur primaire
-                dot.onclick = () => applyTheme(key);
-                container.appendChild(dot);
-            });
-        }
-
-        function useHint() {
-            // 1. Vérifier si le joueur a assez de points (ou XP)
-            // Ici on tape dans le score actuel de la partie pour pénaliser le score final
-            if (gameState.score < 50 && gameState.score > -200) {
-                // On autorise un score négatif un peu, ou on bloque
-                if (!confirm("Attention, cela va réduire votre score de 50 points ! Continuer ?")) return;
-            }
-
-            // 2. Trouver toutes les cases vides ou fausses
-            const candidates = [];
-            document.querySelectorAll('.cell').forEach(cell => {
-                if (cell.value === '' || cell.value !== cell.dataset.ans) {
-                    candidates.push(cell);
-                }
-            });
-
-            if (candidates.length === 0) return; // Grille déjà finie
-
-            // 3. En choisir une au hasard
-            const luckyCell = candidates[Math.floor(Math.random() * candidates.length)];
-
-            // 4. Révéler la lettre
-            luckyCell.value = luckyCell.dataset.ans;
-            luckyCell.classList.add('correct');
-            luckyCell.classList.remove('incorrect');
-            // On la verrouille pour montrer que c'est un indice
-            luckyCell.style.color = 'var(--primary)';
-            luckyCell.style.fontWeight = 'bold';
-
-            // 5. Pénalité
-            gameState.penalty += 50;
-            checkWin();
-            playSound('tap'); // Ou un son spécial "magic"
-
-        }
-
-        /* --- INITIALISATION UI --- */
-        // Appeler cette fonction dans init() !
-        function initDiffUI() {
-            const container = document.getElementById('diffSelector');
-            container.innerHTML = '';
-            Object.keys(DIFFICULTIES).forEach(k => {
-                const d = DIFFICULTIES[k];
-                const btn = document.createElement('div');
-                btn.className = `diff-btn ${k === currentDiff ? 'active' : ''}`;
-                btn.innerText = d.label;
-                btn.onclick = () => {
-                    currentDiff = k;
-                    initDiffUI();
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        /* --- GESTION DES STATS --- */
-        function getStats() {
-            return JSON.parse(localStorage.getItem('cw_stats')) || {
-                gamesPlayed: 0,
-                wordsFound: 0,
-                fastestWin: null,
-                perfectGames: 0,
-                unlockedAch: []
-            };
-        }
-
-        /* --- FONCTION UPDATE STATS COMPLÈTE --- */
+        /* --- STATS & PROFILE --- */
         function updateStats(winData) {
-            // 1. Récupération des stats existantes
-            let stats = JSON.parse(localStorage.getItem('cw_stats')) || {
-                unlockedAch: [],
-                counters: {
-                    totalGames: 0,
-                    totalWords: 0,
-                    winsEasy: 0,
-                    winsNormal: 0,
-                    winsHard: 0,
-                    perfectGames: 0,
-                    hintsUsedTotal: 0,
-                    streakDays: 0,
-                    techWins: 0,
-                    animalWins: 0,
-                    capitalWins: 0
-                },
-                fastestWin: null
-            };
-
-            // Initialisation si counters n'existe pas (pour compatibilité)
+            let stats = JSON.parse(localStorage.getItem('cw_stats')) || { unlockedAch: [], counters: {}, fastestWin: null };
             if (!stats.counters) stats.counters = {};
-            const c = stats.counters; // Alias raccourci
+            const c = stats.counters;
 
-            // 2. Mise à jour des compteurs
+            // Mise à jour des compteurs basiques
             c.totalGames = (c.totalGames || 0) + 1;
             c.totalWords = (c.totalWords || 0) + winData.wordCount;
-
-            // Incrémentation par difficulté
-            if (currentDiff === 'easy') c.winsEasy = (c.winsEasy || 0) + 1;
-            if (currentDiff === 'normal') c.winsNormal = (c.winsNormal || 0) + 1;
-            if (currentDiff === 'hard') c.winsHard = (c.winsHard || 0) + 1;
-
-            // Incrémentation par thème
-            if (currentPack === 'tech') c.techWins = (c.techWins || 0) + 1;
-            if (currentPack === 'animaux') c.animalWins = (c.animalWins || 0) + 1;
-            if (currentPack === 'capitales') c.capitalWins = (c.capitalWins || 0) + 1;
-
-            // Partie parfaite
             if (winData.penalty === 0) c.perfectGames = (c.perfectGames || 0) + 1;
 
-            // Record de temps
-            if (!stats.fastestWin || winData.time < stats.fastestWin) {
+            // --- CORRECTION RECORD DE TEMPS ---
+            // Si fastestWin est null OU si le nouveau temps est meilleur (plus petit)
+            if (stats.fastestWin === null || stats.fastestWin === undefined || winData.time < stats.fastestWin) {
                 stats.fastestWin = winData.time;
+                console.log("Nouveau record enregistré :", stats.fastestWin);
             }
 
-            // 3. Vérification des succès (Unlock Logic)
-            const newUnlocks = [];
-
-            // Fonction helper locale
+            // Check Achievements (Succès)
             const unlock = (id) => {
                 if (!stats.unlockedAch.includes(id)) {
                     stats.unlockedAch.push(id);
-                    newUnlocks.push(id);
+                    showToast(ACHIEVEMENTS.find(a => a.id === id));
                 }
             };
 
-            // --- A. QUANTITÉ (Apprentissage) ---
             if (c.totalGames >= 1) unlock('baby_steps');
             if (c.totalGames >= 5) unlock('warm_up');
-            if (c.totalGames >= 10) unlock('apprentice');
-            if (c.totalGames >= 100) unlock('century');
-
-            // --- B. STREAK (Récupération depuis l'autre localStorage) ---
-            const currentStreak = parseInt(localStorage.getItem('cw_streak') || 0);
-            if (currentStreak >= 3) unlock('regular');
-            if (currentStreak >= 7) unlock('addict');
-            if (currentStreak >= 30) unlock('marathon');
-
-            // --- C. VITESSE (Chrono) ---
-            if (winData.time < 180) unlock('runner'); // < 3 min
-            if (winData.time < 120) unlock('sprinter'); // < 2 min
-            if (winData.time < 60) unlock('flash'); // < 1 min
-            if (winData.time < 30) unlock('light_speed'); // < 30s
-
-            // --- D. ÉRUDITION (Mots) ---
+            if (winData.time < 60) unlock('flash');
             if (c.totalWords >= 50) unlock('reader');
-            if (c.totalWords >= 100) unlock('writer');
-            if (c.totalWords >= 500) unlock('poet');
-            if (c.totalWords >= 1000) unlock('dictionary');
-            if (c.totalWords >= 5000) unlock('encyclopedia');
+            if (winData.penalty === 0) unlock('clean');
 
-            // --- E. PERFECTION ---
-            if (winData.penalty === 0) {
-                unlock('clean');
-                if (c.perfectGames >= 5) unlock('sharp');
-                if (c.perfectGames >= 20) unlock('eagle_eye');
-                if (c.perfectGames >= 50) unlock('oracle');
-                if (currentDiff === 'hard') unlock('godlike'); // Difficile sans indice
-            }
-
-            // --- F. DIFFICULTÉ ---
-            if (currentDiff === 'normal' || currentDiff === 'hard') unlock('brave');
-            if (c.winsNormal >= 5) unlock('knight');
-            if (currentDiff === 'hard') unlock('hero');
-            if (c.winsHard >= 10) unlock('legend');
-
-            // --- G. THÈMES ---
-            if (c.techWins >= 3) unlock('tech_fan');
-            if (c.animalWins >= 3) unlock('zoo_keeper');
-            if (c.capitalWins >= 3) unlock('traveler');
-            if (c.techWins >= 1 && c.animalWins >= 1 && c.capitalWins >= 1) unlock('polymath');
-
-            // --- H. HORAIRES & DATES ---
-            const now = new Date();
-            const hour = now.getHours();
-            const day = now.getDay(); // 0 = Dimanche, 6 = Samedi
-
-            if (hour >= 22 || hour < 4) unlock('night_owl');
-            if (hour >= 4 && hour < 8) unlock('early_bird');
-            if (hour >= 3 && hour < 5) unlock('earlier'); // Entre 3h et 5h du mat
-            if (day === 0 || day === 6) unlock('weekend_warrior');
-
-            // --- I. NIVEAUX (XP) ---
-            const xp = parseInt(localStorage.getItem('cw_xp') || 0);
-            const lvl = Math.floor(Math.sqrt(xp / 500)) + 1;
-
-            if (lvl >= 5) unlock('level_5');
-            if (lvl >= 10) unlock('level_10');
-            if (lvl >= 20) unlock('level_20');
-            if (lvl >= 50) unlock('level_50');
-
-            // --- J. SPÉCIAL ---
-            // 'Math Genius' : Score exact de 1000
-            // On suppose que gameState.score est la valeur finale
-            if (gameState.score === 1000) unlock('math_genius');
-
-
-            // 4. Sauvegarde
             localStorage.setItem('cw_stats', JSON.stringify(stats));
-
-            // 5. Affichage des notifications (Toasts)
-            newUnlocks.forEach(id => {
-                const ach = ACHIEVEMENTS.find(a => a.id === id);
-                if (ach) showToast(ach);
-            });
         }
 
-        /* --- AFFICHAGE PROFIL --- */
-        /* --- AFFICHAGE PROFIL SÉCURISÉ --- */
+        /* --- CORRECTION AFFICHAGE PROFIL --- */
         function showProfile() {
-            // 1. Récupération sécurisée avec valeurs par défaut
-            const rawStats = localStorage.getItem('cw_stats');
-            const stats = rawStats ? JSON.parse(rawStats) : {
-                counters: { totalGames: 0, totalWords: 0, perfectGames: 0 },
-                fastestWin: null,
-                unlockedAch: []
-            };
+            const stats = JSON.parse(localStorage.getItem('cw_stats')) || { unlockedAch: [], counters: {}, fastestWin: null };
+            const c = stats.counters || {};
 
-            // Sécurité supplémentaire si stats existe mais sans 'counters' (vieux profil)
-            const c = stats.counters || { totalGames: 0, totalWords: 0, perfectGames: 0 };
+            document.getElementById('statGames').innerText = c.totalGames || 0;
+            document.getElementById('statWords').innerText = c.totalWords || 0;
+            document.getElementById('statPerfect').innerText = c.perfectGames || 0;
 
-            // 2. Injection dans le HTML (avec vérification que l'élément existe)
-            const elGames = document.getElementById('statGames');
-            const elWords = document.getElementById('statWords');
+            // Formatage du temps (ex: 65s -> 1m 05s)
             const elTime = document.getElementById('statBestTime');
-            const elPerfect = document.getElementById('statPerfect');
-
-            if (elGames) elGames.innerText = c.totalGames || 0;
-            if (elWords) elWords.innerText = c.totalWords || 0;
-            if (elPerfect) elPerfect.innerText = c.perfectGames || 0;
-
-            // Formatage joli pour le temps (ex: 65s -> 1m 05s)
-            if (elTime) {
-                if (stats.fastestWin) {
-                    const m = Math.floor(stats.fastestWin / 60);
-                    const s = stats.fastestWin % 60;
-                    elTime.innerText = m > 0 ? `${m}m ${s}s` : `${s}s`;
-                } else {
-                    elTime.innerText = '-';
-                }
+            if (stats.fastestWin !== null && stats.fastestWin !== undefined) {
+                const m = Math.floor(stats.fastestWin / 60);
+                const s = (stats.fastestWin % 60).toString().padStart(2, '0');
+                elTime.innerText = `${m}m ${s}s`;
+            } else {
+                elTime.innerText = '-';
             }
 
-            // 3. Affichage des succès
+            // ... (Reste du code pour la liste des succès identique) ...
             const list = document.getElementById('achievementsList');
-            if (list) {
-                list.innerHTML = '';
+            list.innerHTML = '';
+            const sorted = [...ACHIEVEMENTS].sort((a, b) => {
+                const hasA = stats.unlockedAch.includes(a.id);
+                const hasB = stats.unlockedAch.includes(b.id);
+                return hasA === hasB ? 0 : hasA ? -1 : 1;
+            });
 
-                // On trie pour afficher les débloqués en premier, puis par tier (Bronze > Platinum visuellement)
-                const sortedAch = [...ACHIEVEMENTS].sort((a, b) => {
-                    const unlockedA = stats.unlockedAch.includes(a.id);
-                    const unlockedB = stats.unlockedAch.includes(b.id);
-                    if (unlockedA && !unlockedB) return -1;
-                    if (!unlockedA && unlockedB) return 1;
-                    return 0;
-                });
-
-                sortedAch.forEach(ach => {
-                    const isUnlocked = stats.unlockedAch.includes(ach.id);
-                    const card = document.createElement('div');
-                    // Ajout de data-tier pour le CSS doré/argenté qu'on a vu avant
-                    card.className = `achievement-card ${isUnlocked ? 'unlocked' : ''}`;
-                    card.dataset.tier = ach.tier;
-
-                    card.innerHTML = `
-                    <div class="ach-icon">${ach.icon}</div>
-                    <div class="ach-info">
-                        <h4>${ach.title}</h4>
-                        <p>${ach.desc}</p>
-                    </div>
-                    ${isUnlocked ? '<div style="margin-left:auto; color:var(--green); font-weight:bold;">✓</div>' : ''}
-                `;
-                    list.appendChild(card);
-                });
-            }
-
+            sorted.forEach(ach => {
+                const unlocked = stats.unlockedAch.includes(ach.id);
+                const card = document.createElement('div');
+                card.className = `achievement-card ${unlocked ? 'unlocked' : ''}`;
+                card.dataset.tier = ach.tier;
+                card.innerHTML = `<div class="ach-icon">${ach.icon}</div><div class="ach-info"><h4>${ach.title}</h4><p>${ach.desc}</p></div>${unlocked ? '<div style="margin-left:auto; font-weight:bold;">✓</div>' : ''}`;
+                list.appendChild(card);
+            });
             showScreen('screen-profile');
         }
 
-        function showToast(ach) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerHTML = `
-            <div style="font-size:2rem">${ach.icon}</div>
-            <div>
-                <div style="font-weight:bold; color:var(--green)">Succès Débloqué !</div>
-                <div>${ach.title}</div>
-            </div>
-        `;
-            container.appendChild(toast);
-            playSound('success'); // Réutiliser ton son de succès
+        /* --- THEMES & EXPORT --- */
+        function applyTheme(name) {
+            const t = COLOR_THEMES[name];
+            const r = document.documentElement;
+            r.style.setProperty('--primary', t.primary);
+            r.style.setProperty('--bg-gradient', t.bg);
+            r.style.setProperty('--green', t.green);
+            localStorage.setItem('cw_color_theme', name);
         }
-
-        /* --- GESTION EXPORT / IMPORT --- */
+        function renderColorPicker(active) {
+            const c = document.getElementById('themeContainer');
+            c.innerHTML = '';
+            Object.keys(COLOR_THEMES).forEach(k => {
+                const d = document.createElement('div');
+                d.className = `theme-dot ${k === active ? 'active' : ''}`;
+                d.style.background = COLOR_THEMES[k].primary;
+                d.onclick = () => { applyTheme(k); renderColorPicker(k); };
+                c.appendChild(d);
+            });
+        }
 
         function exportProfile() {
-            // 1. Rassembler toutes les données du localStorage
-            const data = {
-                xp: localStorage.getItem('cw_xp'),
-                stats: localStorage.getItem('cw_stats'),
-                streak: localStorage.getItem('cw_streak'),
-                lastPlayed: localStorage.getItem('cw_last'),
-                theme: localStorage.getItem('cw_color_theme'),
-                // Signature pour éviter de charger n'importe quoi
-                app: 'CrossWordGen_Backup',
-                date: new Date().toISOString()
-            };
-
-            // 2. Créer le fichier Blob
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-
-            // 3. Déclencher le téléchargement
-            const a = document.createElement('a');
-            a.href = url;
-            // Nom du fichier : backup_2023-10-27.json
-            a.download = `cw_backup_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
+            const data = { xp: localStorage.getItem('cw_xp'), stats: localStorage.getItem('cw_stats'), streak: localStorage.getItem('cw_streak'), theme: localStorage.getItem('cw_color_theme'), app: 'CrossWordGen' };
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'cw_backup.json';
             a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            alert("Sauvegarde téléchargée ! Copiez ce fichier sur votre autre appareil.");
         }
-
-        function importProfile(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
+        function importProfile(inp) {
+            const f = inp.files[0];
+            if (!f) return;
+            const r = new FileReader();
+            r.onload = (e) => {
                 try {
-                    // 1. Lire et parser le fichier
-                    const data = JSON.parse(e.target.result);
-
-                    // 2. Vérification de sécurité basique
-                    if (data.app !== 'CrossWordGen_Backup') {
-                        throw new Error("Ce fichier n'est pas une sauvegarde valide.");
-                    }
-
-                    // 3. Demander confirmation (car ça écrase tout)
-                    if (!confirm("Attention : Cela va remplacer votre progression actuelle (XP, Succès...). Continuer ?")) {
-                        input.value = ''; // Reset l'input
-                        return;
-                    }
-
-                    // 4. Restaurer les données
-                    if (data.xp) localStorage.setItem('cw_xp', data.xp);
-                    if (data.stats) localStorage.setItem('cw_stats', data.stats);
-                    if (data.streak) localStorage.setItem('cw_streak', data.streak);
-                    if (data.lastPlayed) localStorage.setItem('cw_last', data.lastPlayed);
-                    if (data.theme) localStorage.setItem('cw_color_theme', data.theme);
-
-                    // 5. Rafraîchir l'interface
-                    alert("Profil restauré avec succès ! Le jeu va recharger.");
+                    const d = JSON.parse(e.target.result);
+                    if (d.app !== 'CrossWordGen') throw new Error();
+                    if (!confirm('Écraser votre profil ?')) return;
+                    localStorage.setItem('cw_xp', d.xp || 0);
+                    localStorage.setItem('cw_stats', d.stats || '{}');
+                    localStorage.setItem('cw_streak', d.streak || 0);
+                    localStorage.setItem('cw_color_theme', d.theme || 'violet');
                     location.reload();
-
-                } catch (err) {
-                    alert("Erreur lors de l'import : " + err.message);
-                }
+                } catch (err) { alert('Fichier invalide'); }
             };
-            reader.readAsText(file);
+            r.readAsText(f);
         }
-
         function resetProfile() {
-        // 1. Double confirmation pour éviter les accidents
-        if (!confirm("⚠️ ATTENTION ⚠️\n\nVous allez effacer TOUTE votre progression :\n- Niveau et XP\n- Tous les Succès\n- Toutes les statistiques\n\nCette action est irréversible.")) {
-            return;
-        }
-        
-        if (!confirm("Êtes-vous vraiment sûr de vouloir tout supprimer ?")) {
-            return;
+            if (confirm('Tout effacer ? (Irréversible)')) {
+                localStorage.clear(); location.reload();
+            }
         }
 
-        // 2. Nettoyage ciblé du localStorage
-        // On ne supprime QUE les clés du jeu, pas les autres données du site
-        localStorage.removeItem('cw_xp');
-        localStorage.removeItem('cw_stats');
-        localStorage.removeItem('cw_streak');
-        localStorage.removeItem('cw_last');
-        localStorage.removeItem('cw_color_theme');
-        
-        // Optionnel : Supprimer aussi les sauvegardes des défis quotidiens si tu en as
-        // (Parcourir les clés qui commencent par cw_)
-        Object.keys(localStorage).forEach(key => {
-            if(key.startsWith('cw_')) localStorage.removeItem(key);
-        });
+        /* --- NAVIGATION --- */
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+        function goToMenu() {
+            showScreen('screen-menu');
+            document.getElementById('timerContainer').style.display = 'none';
+            document.getElementById('activeClueBar').classList.remove('visible');
+        }
+        function showAdmin() { showScreen('screen-admin'); }
+        function closeModal() { document.getElementById('victoryModal').style.display = 'none'; goToMenu(); }
 
-        // 3. Feedback et Reload
-        alert("Profil effacé avec succès. Retour à la case départ !");
-        location.reload(); // Recharge la page pour tout remettre à zéro proprement
-    }
+        function showToast(ach) {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div'); t.className = 'toast';
+            t.innerHTML = `<div style="font-size:2rem">${ach.icon}</div><div><div style="color:var(--green);font-weight:bold;">Succès !</div><div>${ach.title}</div></div>`;
+            c.appendChild(t); playSound('success');
+        }
 
+        function playSound(t) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            if (t === 'tap') { o.frequency.setValueAtTime(600, audioCtx.currentTime); g.gain.setValueAtTime(0.05, audioCtx.currentTime); o.start(); o.stop(audioCtx.currentTime + 0.05); }
+            else { o.frequency.setValueAtTime(440, audioCtx.currentTime); o.frequency.linearRampToValueAtTime(880, audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3); o.start(); o.stop(audioCtx.currentTime + 0.3); }
+        }
 
+        const RNG = { create: function (s) { let h = 1779033703; for (let i = 0; i < s.length; i++)h = Math.imul(h ^ s.charCodeAt(i), 597399067); return function () { h = Math.imul(h ^ h >>> 9, 2716044179); return (h >>> 0) / 4294967296 } }, shuffle: function (a, r) { let c = a.length; while (c != 0) { let i = Math.floor(r() * c); c--;[a[c], a[i]] = [a[i], a[c]] } return a } };
 
+        function checkDailyStatus() {
+            const btn = document.getElementById('btn-daily');
+            if (!btn) return;
 
+            // 1. Récupérer la date du jour (Même logique que le Streak pour être cohérent)
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            const today = new Date(now.getTime() - offset).toISOString().split('T')[0];
 
+            // 2. Récupérer la date de dernière partie jouée
+            const last = localStorage.getItem('cw_last');
 
+            // 3. Si ça correspond, on change le style
+            if (last === today) {
+                btn.classList.add('completed');
+                // On change aussi le contenu pour être clair
+                btn.innerHTML = `
+                <span class="menu-icon">✅</span>
+                <div>
+                    <h3>Défi du Jour</h3>
+                    <small>Terminé ! À demain.</small>
+                </div>
+            `;
+                // Optionnel : Retirer le onclick si tu veux empêcher de rejouer
+                btn.onclick = null;
+            }
+        }
+
+        // START
         init();
+
     </script>
 
 
