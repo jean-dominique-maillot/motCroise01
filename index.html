@@ -1,0 +1,2120 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CrossWord Master</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+            --green: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 250px;
+            /* Espace pour clavier virtuel */
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* --- UI UTILS --- */
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-share {
+            background: var(--green);
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .logo span {
+            color: var(--primary);
+            opacity: 0.8;
+            font-weight: 300;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            align-items: center;
+            padding: 5px 15px;
+        }
+
+        .xp-track {
+            width: 60px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: var(--green);
+            width: 0%;
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+
+        /* --- NAVIGATION --- */
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- MENU --- */
+        .menu-box {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .menu-grid {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .menu-btn {
+            padding: 20px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .menu-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .menu-icon {
+            font-size: 2rem;
+        }
+
+        /* SELECTEUR DE THEME */
+        .theme-selector {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .theme-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .theme-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* --- LAYOUT JEU --- */
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 850px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* --- GRILLE (SOLIDE) --- */
+        .grid-wrapper {
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .crossword-grid {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            grid-auto-rows: 1fr;
+            gap: 1px;
+            background: #475569;
+            border: 2px solid #475569;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1 / 1;
+        }
+
+        .cell-container {
+            position: relative;
+            background: white;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .cell-container.blocked {
+            background: #0f172a;
+        }
+
+        .cell {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-weight: 800;
+            color: #1e293b;
+            padding: 0;
+            margin: 0;
+            font-size: clamp(10px, 3.5cqw, 22px);
+            position: relative;
+            z-index: 1;
+            text-transform: uppercase;
+        }
+
+        .cell:focus {
+            background: #e0e7ff;
+            outline: none;
+        }
+
+        .cell.correct {
+            background: #dcfce7;
+        }
+
+        .cell.incorrect {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .cell-number {
+            position: absolute;
+            top: 1px;
+            left: 2px;
+            font-size: clamp(7px, 1.5cqw, 10px);
+            color: var(--primary);
+            font-weight: 900;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* --- DEFINITIONS --- */
+        .defs-panel {
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .defs-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+
+        .tab.active {
+            opacity: 1;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .def-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .def-item {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            margin-bottom: 5px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .def-item.highlight {
+            background: rgba(99, 102, 241, 0.2);
+            border-left: 3px solid var(--primary);
+        }
+
+        /* --- CLAVIER VIRTUEL --- */
+        .keyboard-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #0f172a;
+            border-top: 1px solid var(--border);
+            padding: 10px;
+            z-index: 100;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+        }
+
+        .kb-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 5px;
+        }
+
+        .kb-key {
+            flex: 1;
+            max-width: 40px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .kb-key:active {
+            background: var(--primary);
+            transform: scale(0.95);
+        }
+
+        .kb-key.wide {
+            max-width: 60px;
+            font-size: 0.9rem;
+        }
+
+        /* --- ADMIN & MODAL --- */
+        textarea {
+            width: 100%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            border: 1px solid var(--border);
+            margin: 10px 0;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .score-big {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--green);
+            margin: 20px 0;
+        }
+
+        .streak-badge {
+            background: #f59e0b;
+            color: black;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        /* --- NOUVEAUX STYLES XP & THEMES --- */
+
+        /* Texte XP précis */
+        .xp-details {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            margin-left: 10px;
+            min-width: 80px;
+            text-align: right;
+            font-family: monospace;
+            /* Pour que les chiffres ne bougent pas */
+        }
+
+        /* Sélecteur de Thème (Boutons ronds) */
+        .theme-picker {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .theme-dot {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .theme-dot:hover {
+            transform: scale(1.2);
+        }
+
+        /* Indicateur de sélection */
+        .theme-dot.active {
+            border-color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .theme-dot.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-shadow: 0 1px 2px black;
+        }
+
+        @keyframes pop-word {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+                background: #86efac;
+                box-shadow: 0 0 15px #22c55e;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .word-completed {
+            animation: pop-word 0.4s ease-in-out;
+        }
+
+        /* --- DIFFICULTÉ & PROFIL --- */
+
+        /* Sélecteur de difficulté (Style "Pill") */
+        .diff-selector {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50px;
+            padding: 5px;
+            margin: 15px auto;
+            width: fit-content;
+            border: 1px solid var(--border);
+        }
+
+        .diff-btn {
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            opacity: 0.7;
+        }
+
+        .diff-btn.active {
+            background: var(--primary);
+            color: white;
+            opacity: 1;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Grille des Succès */
+        /* --- SUCCÈS : DESIGN MÉTALLIQUE & PAILLETÉ --- */
+/* --- SUCCÈS : DESIGN MÉTALLIQUE V3 (CORRIGÉ) --- */
+
+.achievements-list {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;
+    text-align: left; max-height: 400px; overflow-y: auto; padding: 15px;
+}
+
+.achievement-card {
+    /* Base (Verrouillé) */
+    background: rgba(255,255,255,0.05); 
+    padding: 15px; border-radius: 12px;
+    border: 1px solid var(--border); 
+    display: flex; gap: 15px; align-items: center;
+    opacity: 0.6; filter: grayscale(1); 
+    position: relative; overflow: hidden;
+    transition: 0.3s;
+}
+
+/* --- TEXTE & CONTENU --- */
+/* On s'assure que le texte reste au-dessus des effets de fond */
+.achievement-card .ach-icon,
+.achievement-card .ach-info,
+.achievement-card div:last-child {
+    position: relative;
+    z-index: 2;
+}
+
+/* --- ETAT DÉBLOQUÉ GLOBAL --- */
+.achievement-card.unlocked {
+    opacity: 1; filter: grayscale(0); transform: scale(1.02);
+    border: 2px solid white;
+    color: #000; /* Texte noir forcé pour le contraste */
+    text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+
+.achievement-card.unlocked h4 { margin: 0; font-weight: 900; color: #000; }
+.achievement-card.unlocked p { margin: 0; font-size: 0.85rem; font-weight: 700; color: #333; }
+
+/* --- PAILLETTES (VIA ::AFTER) --- */
+.achievement-card.unlocked::after {
+    content: '';
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1; /* Entre le fond et le texte */
+    background-image: 
+        radial-gradient(circle, white 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px);
+    background-size: 30px 30px, 15px 15px;
+    mix-blend-mode: overlay; /* Fusionne avec le métal */
+    opacity: 0.7 !important;
+    pointer-events: none;
+    animation: sparkle-anim 3s infinite linear;
+}
+
+/* --- COULEURS MÉTALLIQUES (FONDS) --- */
+
+/* BRONZE */
+.achievement-card[data-tier="bronze"].unlocked {
+    background-image: linear-gradient(45deg, #5D4037, #8D6E63, #D7CCC8, #8D6E63, #5D4037);
+    background-size: 200% 200%;
+    border-color: #D7CCC8;
+    animation: metal-move 6s ease infinite;
+}
+
+/* ARGENT */
+.achievement-card[data-tier="silver"].unlocked {
+    background-image: linear-gradient(45deg, #546E7A, #90A4AE, #FFFFFF, #90A4AE, #546E7A);
+    background-size: 200% 200%;
+    border-color: #FFFFFF;
+    animation: metal-move 5s ease infinite;
+}
+
+/* OR (CORRIGÉ : Couleurs intenses) */
+.achievement-card[data-tier="gold"].unlocked {
+    /* Dégradé riche : Marron Or -> Or Jaune -> Blanc -> Or Jaune -> Marron Or */
+    background-image: linear-gradient(45deg, #B8860B, #FFD700, #FFF8E1, #FFD700, #B8860B);
+    background-size: 200% 200%;
+    border-color: #ffd900 !important;
+    box-shadow: 0 0 15px rgba(255, 215, 0,0.6) !important;
+    animation: metal-move 4s ease infinite !important;
+}
+
+/* PLATINE */
+.achievement-card[data-tier="platinum"].unlocked {
+    background-image: linear-gradient(45deg, #37474F, #B0BEC5, #FFFFFF, #B0BEC5, #37474F);
+    background-size: 200% 200%;
+    border-color: #E0F7FA;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+    animation: metal-move 3s ease infinite;
+}
+/* On s'assure que les paillettes sont bien visibles sur l'or */
+.achievement-card.unlocked::after {
+    opacity: 0.6 !important;
+    mix-blend-mode: overlay !important;
+}
+
+/* --- ANIMATIONS --- */
+
+@keyframes metal-move {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes sparkle-anim {
+    0% { transform: translateY(0); opacity: 0.5; }
+    50% { transform: translateY(-3px); opacity: 0.9; }
+    100% { transform: translateY(0); opacity: 0.5; }
+}
+
+        /* Notification de succès (Toast) */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: #0f172a;
+            border: 2px solid var(--green);
+            padding: 15px 25px;
+            border-radius: 12px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideIn 0.5s ease, fadeOut 0.5s ease 3s forwards;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 10px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .stat-val {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: block;
+        }
+
+        
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- HEADER -->
+        <header>
+            <div class="logo">
+                <h1>CrossWord<span>Gen</span></h1>
+            </div>
+            <div class="stats-bar glass-panel">
+
+                <div style="margin-right:10px">🔥 <span id="streakDisplay">0</span></div>
+
+                <div style="display:flex; flex-direction:column; align-items:end;">
+                    <div style="display:flex; align-items:center; width:100%">
+                        <span style="margin-right:5px">Niv. <span id="lvlDisplay">1</span></span>
+                        <div class="xp-track">
+                            <div id="xpFill" class="xp-fill"></div>
+                        </div>
+                    </div>
+                    <!-- Le nouveau texte d'XP -->
+                    <div id="xpText" class="xp-details">0 / 500 XP</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MENU -->
+        <div id="screen-menu" class="screen active">
+
+
+
+            <div class="menu-box glass-panel">
+                <h2>Menu Principal</h2>
+                <!-- NOUVEAU : SÉLECTEUR DE COULEUR -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <p style="font-size:0.8rem; opacity:0.6; margin-bottom:5px;">🎨 Personnaliser l'ambiance</p>
+                    <div class="theme-picker" id="themeContainer">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+                <!-- Fin du nouveau bloc -->
+
+                <div style="margin-top:20px; text-align:left;">
+                    <label style="font-size:0.9rem; color:#94a3b8; margin-left:5px;">Choisir un thème :</label>
+                    <div class="theme-selector" id="themeSelector">
+                        <!-- Généré en JS -->
+                    </div>
+                </div>
+
+                <!-- Dans screen-menu, juste avant class="menu-grid" -->
+                <div style="text-align:center; margin: 20px 0;">
+                    <label style="font-size:0.8rem; opacity:0.7">Difficulté :</label>
+                    <div class="diff-selector" id="diffSelector">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+
+                <div class="menu-grid">
+                    <div class="menu-btn" onclick="startGame('daily')">
+                        <span class="menu-icon">📅</span>
+                        <div>
+                            <h3>Défi du Jour</h3>
+                            <small style="opacity:0.7">Grille unique mondiale</small>
+                        </div>
+                    </div>
+                    <div class="menu-btn" onclick="startGame('random')">
+                        <span class="menu-icon">🎲</span>
+                        <div>
+                            <h3>Partie Rapide</h3>
+                            <small style="opacity:0.7">Entraînement infini</small>
+                        </div>
+                    </div>
+                    <div class="menu-btn" onclick="showAdmin()">
+                        <span class="menu-icon">🛠️</span>
+                        <div>
+                            <h3>Créateur</h3>
+                            <small style="opacity:0.7">Créer une grille</small>
+                        </div>
+                    </div>
+                    <div class="menu-btn" onclick="showProfile()">
+                        <span class="menu-icon">🏆</span>
+                        <div>
+                            <h3>Profil & Succès</h3>
+                            <small style="opacity:0.7">Voir mes stats</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JEU -->
+        <div id="screen-game" class="screen">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                <button class="btn btn-secondary" onclick="goToMenu()">⬅ Retour</button>
+                <div style="display:flex; gap:10px;">
+                    <div class="glass-panel" style="padding:5px 15px; font-weight:bold; font-family:monospace">
+                        ⏱️ <span id="timerDisplay">00:00</span>
+                    </div>
+                    <button class="btn btn-share" onclick="shareThisGame()">🔗 Défier un ami</button>
+                    <div class="glass-panel"
+                        style="padding:5px 15px; font-weight:bold; display:flex; align-items:center;">
+                        Score: <span id="scoreDisplay" style="margin-left:5px">0</span>
+                    </div>
+                    <button class="btn btn-secondary" onclick="useHint()" title="Coût: 50 points">💡 Indice
+                        (-50)</button>
+                </div>
+            </div>
+
+            <div class="game-layout">
+                <div class="grid-wrapper">
+                    <div id="gameGrid" class="crossword-grid"></div>
+                </div>
+
+                <div class="defs-panel glass-panel">
+                    <div class="defs-tabs">
+                        <div class="tab active" onclick="switchTab('horizontal')">Horizontal</div>
+                        <div class="tab" onclick="switchTab('vertical')">Vertical</div>
+                    </div>
+                    <div id="defList" class="def-list"></div>
+                </div>
+            </div>
+
+            <!-- Clavier Virtuel -->
+            <div id="virtual-keyboard" class="keyboard-container"></div>
+        </div>
+
+        <!-- ADMIN -->
+        <div id="screen-admin" class="screen">
+            <div class="menu-box glass-panel">
+                <h2>Créateur</h2>
+                <textarea id="jsonInput" placeholder='[{"mot":"TEST","definition":"Essai"}]'></textarea>
+                <div style="display:grid; gap:10px; grid-template-columns: 1fr 1fr;">
+                    <button class="btn" onclick="loadCustom()">Jouer</button>
+                    <button class="btn btn-secondary" onclick="goToMenu()">Retour</button>
+                </div>
+                <button class="btn" style="width:100%; margin-top:10px; background:var(--green);"
+                    onclick="shareUrl()">Copier le Lien de partage</button>
+            </div>
+        </div>
+
+        <div id="screen-profile" class="screen">
+            <div class="menu-box glass-panel" style="max-width:800px">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2>Mon Profil</h2>
+                    <button class="btn btn-secondary" onclick="goToMenu()">Fermer</button>
+                </div>
+
+                <!-- Statistiques Globales -->
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <!-- ID IMPORTANT: statGames -->
+                        <span class="stat-val" id="statGames">0</span>
+                        Parties Jouées
+                    </div>
+                    <div class="stat-box">
+                        <!-- ID IMPORTANT: statWords -->
+                        <span class="stat-val" id="statWords">0</span>
+                        Mots Trouvés
+                    </div>
+                    <div class="stat-box">
+                        <!-- ID IMPORTANT: statBestTime -->
+                        <span class="stat-val" id="statBestTime">-</span>
+                        Record (s)
+                    </div>
+                    <div class="stat-box">
+                        <!-- ID IMPORTANT: statPerfect -->
+                        <span class="stat-val" id="statPerfect">0</span>
+                        Sans Indices
+                    </div>
+                </div>
+
+                <h3 style="margin:20px 0 10px 0; border-top:1px solid var(--border); padding-top:20px;">Succès Débloqués
+                </h3>
+                <div id="achievementsList" class="achievements-list">
+                    <!-- Généré par JS -->
+                </div>
+                <!-- DANS screen-profile, APRÈS LA LISTE DES SUCCÈS -->
+
+                <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
+                    <h3 style="margin-bottom: 15px;">Sauvegarde & Synchro</h3>
+                    <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 15px;">
+                        Transférez votre progression vers un autre appareil.
+                    </p>
+
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button class="btn btn-secondary" onclick="exportProfile()">
+                            📤 Exporter Profil
+                        </button>
+
+                        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">
+                            📥 Importer Profil
+                        </button>
+                        <!-- Input caché pour le fichier -->
+                        <input type="file" id="importFile" style="display: none" accept=".json"
+                            onchange="importProfile(this)">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteneur pour les notifications -->
+        <div id="toastContainer" class="toast-container"></div>
+
+        <!-- MODAL VICTOIRE -->
+        <div id="victoryModal" class="modal">
+            <div class="modal-content glass-panel">
+                <h2>Victoire ! 🎉</h2>
+                <div id="finalScore" class="score-big"></div>
+                <p id="streakBonus" style="margin-bottom:20px; color:#fbbf24;"></p>
+                <button class="btn" onclick="closeModal()">Continuer</button>
+                <button class="btn" style="background:var(--green); margin-left:10px;" onclick="shareEmoji()">Partager
+                    📱</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        /* --- CONFIGURATION DIFFICULTÉ --- */
+        const DIFFICULTIES = {
+            'easy': { label: 'Facile', size: 10, words: 8, multiplier: 0.8 },
+            'normal': { label: 'Normal', size: 15, words: 12, multiplier: 1.0 },
+            'hard': { label: 'Difficile', size: 18, words: 20, multiplier: 1.5 }
+        };
+        let currentDiff = 'normal';
+
+        /* --- CONFIGURATION SUCCÈS --- */
+        const ACHIEVEMENTS = [
+            // --- CATÉGORIE : PREMIERS PAS (Apprentissage) ---
+            { id: 'baby_steps', tier: 'bronze', icon: '🐣', title: 'Premiers Pas', desc: 'Gagner 1 partie' },
+            { id: 'warm_up', tier: 'bronze', icon: '☕', title: 'Échauffement', desc: 'Gagner 5 parties' },
+            { id: 'apprentice', tier: 'silver', icon: '🎓', title: 'Apprenti', desc: 'Gagner 10 parties' },
+            { id: 'regular', tier: 'silver', icon: '📅', title: 'Habitué', desc: 'Jouer 3 jours de suite' },
+            { id: 'addict', tier: 'gold', icon: '🔥', title: 'Accro', desc: 'Jouer 7 jours de suite' },
+
+            // --- CATÉGORIE : VITESSE (Chrono) ---
+            { id: 'runner', tier: 'bronze', icon: '👟', title: 'Coureur', desc: 'Gagner en moins de 3 min' },
+            { id: 'sprinter', tier: 'silver', icon: '⚡', title: 'Sprinter', desc: 'Gagner en moins de 2 min' },
+            { id: 'flash', tier: 'gold', icon: '🚀', title: 'The Flash', desc: 'Gagner en moins de 60 sec' },
+            { id: 'light_speed', tier: 'platinum', icon: '💫', title: 'Vitesse Lumière', desc: 'Gagner en moins de 30 sec (Facile min)' },
+
+            // --- CATÉGORIE : ÉRUDITION (Vocabulaire) ---
+            { id: 'reader', tier: 'bronze', icon: '📖', title: 'Lecteur', desc: 'Trouver 50 mots' },
+            { id: 'writer', tier: 'silver', icon: '✍️', title: 'Écrivain', desc: 'Trouver 100 mots' },
+            { id: 'poet', tier: 'gold', icon: '📜', title: 'Poète', desc: 'Trouver 500 mots' },
+            { id: 'dictionary', tier: 'platinum', icon: '📚', title: 'Dictionnaire Vivant', desc: 'Trouver 1000 mots' },
+            { id: 'encyclopedia', tier: 'platinum', icon: '🧠', title: 'Encyclopédie', desc: 'Trouver 5000 mots' },
+
+            // --- CATÉGORIE : PERFECTION (Sans Indices) ---
+            { id: 'clean', tier: 'bronze', icon: '✨', title: 'Propre', desc: '1 partie sans indice' },
+            { id: 'sharp', tier: 'silver', icon: '🔪', title: 'Affûté', desc: '5 parties sans indice' },
+            { id: 'eagle_eye', tier: 'gold', icon: '👁️', title: 'Oeil de Lynx', desc: '20 parties sans indice' },
+            { id: 'oracle', tier: 'platinum', icon: '🔮', title: 'L\'Oracle', desc: '50 parties sans indice' },
+
+            // --- CATÉGORIE : DIFFICULTÉ (Mode Hard) ---
+            { id: 'brave', tier: 'bronze', icon: '🛡️', title: 'Brave', desc: 'Gagner en mode Normal' },
+            { id: 'knight', tier: 'silver', icon: '⚔️', title: 'Chevalier', desc: 'Gagner 5 fois en Normal' },
+            { id: 'hero', tier: 'gold', icon: '🦁', title: 'Héros', desc: 'Gagner en mode Difficile' },
+            { id: 'legend', tier: 'platinum', icon: '👑', title: 'Légende', desc: 'Gagner 10 fois en Difficile' },
+            { id: 'godlike', tier: 'platinum', icon: '⚡', title: 'Divin', desc: 'Gagner en Difficile sans indice' },
+
+            // --- CATÉGORIE : THÈMES (Exploration) ---
+            { id: 'tech_fan', tier: 'bronze', icon: '💻', title: 'Geek', desc: 'Finir 3 grilles Tech' },
+            { id: 'zoo_keeper', tier: 'bronze', icon: '🦁', title: 'Gardien de Zoo', desc: 'Finir 3 grilles Animaux' },
+            { id: 'traveler', tier: 'bronze', icon: '✈️', title: 'Voyageur', desc: 'Finir 3 grilles Capitales' },
+            { id: 'polymath', tier: 'gold', icon: '🎨', title: 'Polymath', desc: 'Gagner dans tous les thèmes' },
+
+            // --- CATÉGORIE : PERSÉVÉRANCE (Échecs et Essais) ---
+            { id: 'never_give_up', tier: 'bronze', icon: '💪', title: 'Ne lâche rien', desc: 'Utiliser 5 indices dans une partie' },
+            { id: 'rich_kid', tier: 'silver', icon: '💸', title: 'Enfant Riche', desc: 'Dépenser 500 points en indices (Total)' },
+            { id: 'earlier', tier: 'silver', icon: '🌅', title: 'Earlier', desc: 'Jouer entre 3h et 5h du matin' },
+
+            // --- CATÉGORIE : SCORE (XP) ---
+            { id: 'level_5', tier: 'bronze', icon: '⭐', title: 'Niveau 5', desc: 'Atteindre le niveau 5' },
+            { id: 'level_10', tier: 'silver', icon: '🌟', title: 'Niveau 10', desc: 'Atteindre le niveau 10' },
+            { id: 'level_20', tier: 'gold', icon: '💫', title: 'Niveau 20', desc: 'Atteindre le niveau 20' },
+            { id: 'level_50', tier: 'platinum', icon: '🌌', title: 'Niveau 50', desc: 'Atteindre le niveau 50' },
+
+            // --- CATÉGORIE : SECRETS (Easter Eggs) ---
+            { id: 'creator', tier: 'gold', icon: '🛠️', title: 'Architecte', desc: 'Créer et jouer une grille perso' },
+            { id: 'share_spirit', tier: 'bronze', icon: '💌', title: 'Partageur', desc: 'Partager une grille avec un ami' },
+            { id: 'clicker', tier: 'bronze', icon: '🖱️', title: 'Clicker Fou', desc: 'Cliquer 10 fois sur le logo' },
+
+            // --- NOUVEAUX ---
+            { id: 'marathon', tier: 'gold', icon: '🏃', title: 'Marathonien', desc: 'Jouer 30 jours de suite' },
+            { id: 'century', tier: 'platinum', icon: '💯', title: 'Centenaire', desc: 'Jouer 100 parties' },
+            { id: 'sniper', tier: 'silver', icon: '🎯', title: 'Sniper', desc: 'Aucune erreur de frappe dans une partie' },
+            { id: 'night_owl', tier: 'bronze', icon: '🦉', title: 'Oiseau de Nuit', desc: 'Gagner une partie après 22h' },
+            { id: 'early_bird', tier: 'bronze', icon: '🐦', title: 'Lève-tôt', desc: 'Gagner une partie avant 8h' },
+            { id: 'weekend_warrior', tier: 'silver', icon: '🎉', title: 'Guerrier du WE', desc: 'Jouer Samedi et Dimanche' },
+            { id: 'math_genius', tier: 'silver', icon: '🧮', title: 'Calculatrice', desc: 'Gagner avec un score exact de 1000' }
+        ];
+        // --- DATA PACKS ---
+        const PACKS = {
+            "tech": [
+                { "mot": "INTERNET", "definition": "Réseau mondial" }, { "mot": "NAVIGATEUR", "definition": "Logiciel pour surfer" },
+                { "mot": "INTERFACE", "definition": "Lien homme-machine" }, { "mot": "SATELLITE", "definition": "Objet en orbite" },
+                { "mot": "TELEPHONE", "definition": "Appareil de communication" }, { "mot": "ORDINATEUR", "definition": "Machine de calcul" },
+                { "mot": "CLAVIER", "definition": "Pour écrire" }, { "mot": "SOURIS", "definition": "Pour cliquer" },
+                { "mot": "ECRAN", "definition": "Pour voir" }, { "mot": "PIXEL", "definition": "Point d'image" },
+                { "mot": "CODE", "definition": "Langage machine" }, { "mot": "WIFI", "definition": "Sans fil" },
+                { "mot": "SERVEUR", "definition": "Stockage distant" }, { "mot": "DONNEE", "definition": "Information binaire" },
+                { "mot": "ALGORITHME", "definition": "Suite logique" }, { "mot": "ROBOT", "definition": "Machine autonome" },
+                { "mot": "RESEAU", "definition": "Connexion de machines" }, { "mot": "VIRUS", "definition": "Programme malveillant" }
+            ],
+            "animaux": [
+                { "mot": "GIRAFE", "definition": "Long cou" }, { "mot": "ELEPHANT", "definition": "Trompe" },
+                { "mot": "LION", "definition": "Roi de la jungle" }, { "mot": "TIGRE", "definition": "Félin rayé" },
+                { "mot": "AIGLE", "definition": "Rapace" }, { "mot": "REQUIN", "definition": "Prédateur marin" },
+                { "mot": "BALEINE", "definition": "Mammifère marin" }, { "mot": "CHIEN", "definition": "Meilleur ami" },
+                { "mot": "CHAT", "definition": "Félin domestique" }, { "mot": "LOUP", "definition": "Chasse en meute" },
+                { "mot": "SINGE", "definition": "Primate agile" }, { "mot": "OURS", "definition": "Aime le miel" },
+                { "mot": "ZEBRE", "definition": "Cheval rayé" }, { "mot": "SERPENT", "definition": "Reptile rampant" }
+            ],
+            "capitales": [
+                { "mot": "PARIS", "definition": "France" }, { "mot": "LONDRES", "definition": "Royaume-Uni" },
+                { "mot": "BERLIN", "definition": "Allemagne" }, { "mot": "MADRID", "definition": "Espagne" },
+                { "mot": "ROME", "definition": "Italie" }, { "mot": "TOKYO", "definition": "Japon" },
+                { "mot": "PEKIN", "definition": "Chine" }, { "mot": "MOSCOU", "definition": "Russie" },
+                { "mot": "OTTAWA", "definition": "Canada" }, { "mot": "BRASILIA", "definition": "Brésil" },
+                { "mot": "DAKAR", "definition": "Sénégal" }, { "mot": "CAIRE", "definition": "Egypte" }
+            ]
+        };
+
+        let currentPack = "tech";
+        // Ajout de currentDirection pour gérer le sens de frappe
+        let gameState = {
+            grid: [],
+            placed: [],
+            score: 0,
+            mode: 'random',
+            activeCell: null,
+            currentDirection: 'H',
+            penalty: 0  // <--- AJOUTEZ CECI
+        };
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // --- INIT ---
+        function init() {
+            updateXP();
+            updateStreakUI();
+            initTheme();
+            renderThemeSelector();
+            renderKeyboard();
+            setupPhysicalKeyboard(); // Activation du clavier physique
+            initDiffUI();
+
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('grid')) {
+                try {
+                    const json = JSON.parse(decodeURIComponent(escape(atob(params.get('grid')))));
+                    startGame('custom', json);
+                } catch (e) { console.error(e); }
+            }
+        }
+
+        function renderThemeSelector() {
+            const container = document.getElementById('themeSelector');
+            container.innerHTML = '';
+            Object.keys(PACKS).forEach(key => {
+                const btn = document.createElement('div');
+                btn.className = `theme-chip ${key === currentPack ? 'active' : ''}`;
+                btn.innerText = key.charAt(0).toUpperCase() + key.slice(1);
+                btn.onclick = () => {
+                    currentPack = key;
+                    renderThemeSelector();
+                };
+                container.appendChild(btn);
+            });
+        }
+        let gameTimerInterval;
+        let startTime;
+        // --- GAME ENGINE SÉCURISÉ ---
+        function startGame(mode, data = null, attempts = 0) {
+            // Sécurité anti-crash : Si on a essayé 20 fois sans succès, on arrête.
+            if (attempts > 20) {
+                alert("Oups ! Impossible de générer une grille valide avec ces mots.\n\nConseils :\n1. Ajoutez plus de mots (idéalement 10+)\n2. Vérifiez qu'ils ont des lettres communes\n3. Évitez les mots trop longs (> 15 lettres)");
+                goToMenu();
+                return;
+            }
+
+            gameState.mode = mode;
+            gameState.score = 0;
+            gameState.penalty = 0;
+            document.getElementById('scoreDisplay').innerText = '0';
+            // RECUPERER CONFIG DIFFICULTÉ
+            const conf = DIFFICULTIES[currentDiff];
+            const targetWords = conf.words;
+
+            let words = data || [...PACKS[currentPack]];
+
+            // Préparation de la liste de mots
+            if (mode === 'daily') {
+                let allWords = [...PACKS.tech, ...PACKS.animaux, ...PACKS.capitales];
+                const date = new Date().toISOString().split('T')[0];
+                // On ajoute 'attempts' au seed pour varier si ça échoue
+                const rng = RNG.create(date + attempts);
+                words = RNG.shuffle(allWords, rng).slice(0, targetWords);
+            } else if (mode === 'random') {
+                words = words.sort(() => 0.5 - Math.random()).slice(0, targetWords);
+            }
+
+            if (gameTimerInterval) clearInterval(gameTimerInterval);
+            startTime = Date.now();
+            gameTimerInterval = setInterval(updateTimer, 1000);
+
+            // Tentative de génération
+            if (generateGrid(words, conf.size)) {
+                // SUCCÈS
+                showScreen('screen-game');
+                renderGrid();
+                renderDefs();
+            } else {
+                // ÉCHEC : On réessaie en augmentant le compteur
+                console.log("Tentative échouée, nouvel essai...", attempts);
+                startGame(mode, data, attempts + 1);
+            }
+        }
+
+        // --- ALGO GENERATION ---
+        function generateGrid(list, size = 15) {
+            for (let attempt = 0; attempt < 5; attempt++) {
+                gameState.grid = Array(size).fill().map(() => Array(size).fill(null));
+                gameState.placed = [];
+
+                let wordPool = JSON.parse(JSON.stringify(list));
+                wordPool.sort((a, b) => b.mot.length - a.mot.length);
+
+                const firstWord = wordPool[0];
+                const startCol = Math.floor((size - firstWord.mot.length) / 2);
+                const startRow = Math.floor(size / 2);
+                placeWordOnGrid(firstWord, startRow, startCol, 'H');
+                wordPool.shift();
+
+                let stuckCount = 0;
+                while (wordPool.length > 0 && stuckCount < 50) {
+                    let placedThisRound = false;
+                    for (let i = 0; i < wordPool.length; i++) {
+                        const wordObj = wordPool[i];
+                        const possibleSpots = findIntersections(wordObj.mot, size);
+
+                        if (possibleSpots.length > 0) {
+                            const spot = possibleSpots[Math.floor(Math.random() * possibleSpots.length)];
+                            placeWordOnGrid(wordObj, spot.row, spot.col, spot.dir);
+                            wordPool.splice(i, 1);
+                            placedThisRound = true;
+                            break;
+                        }
+                    }
+                    if (!placedThisRound) stuckCount++;
+                }
+                if (gameState.placed.length >= 5) return true;
+            }
+            return false;
+        }
+
+        function findIntersections(word, size) {
+            let spots = [];
+            for (let i = 0; i < word.length; i++) {
+                const letter = word[i];
+                for (let r = 0; r < size; r++) {
+                    for (let c = 0; c < size; c++) {
+                        if (gameState.grid[r][c] === letter) {
+                            if (isValidPlacement(word, r, c - i, 'H', size)) spots.push({ row: r, col: c - i, dir: 'H' });
+                            if (isValidPlacement(word, r - i, c, 'V', size)) spots.push({ row: r - i, col: c, dir: 'V' });
+                        }
+                    }
+                }
+            }
+            return spots;
+        }
+
+        function isValidPlacement(word, row, col, dir, size) {
+            if (row < 0 || col < 0) return false;
+            if (dir === 'H' && (col + word.length > size)) return false;
+            if (dir === 'V' && (row + word.length > size)) return false;
+
+            if (dir === 'H') {
+                if (col > 0 && gameState.grid[row][col - 1] !== null) return false;
+                if (col + word.length < size && gameState.grid[row][col + word.length] !== null) return false;
+            } else {
+                if (row > 0 && gameState.grid[row - 1][col] !== null) return false;
+                if (row + word.length < size && gameState.grid[row + word.length][col] !== null) return false;
+            }
+
+            for (let i = 0; i < word.length; i++) {
+                const r = dir === 'H' ? row : row + i;
+                const c = dir === 'H' ? col + i : col;
+                const cellContent = gameState.grid[r][c];
+
+                if (cellContent !== null && cellContent !== word[i]) return false;
+
+                if (cellContent === null) {
+                    if (dir === 'H') {
+                        if (r > 0 && gameState.grid[r - 1][c] !== null) return false;
+                        if (r < size - 1 && gameState.grid[r + 1][c] !== null) return false;
+                    } else {
+                        if (c > 0 && gameState.grid[r][c - 1] !== null) return false;
+                        if (c < size - 1 && gameState.grid[r][c + 1] !== null) return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function placeWordOnGrid(wordObj, row, col, dir) {
+            for (let i = 0; i < wordObj.mot.length; i++) {
+                const r = dir === 'H' ? row : row + i;
+                const c = dir === 'H' ? col + i : col;
+                gameState.grid[r][c] = wordObj.mot[i];
+            }
+            gameState.placed.push({ ...wordObj, r: row, c: col, dir, num: gameState.placed.length + 1 });
+        }
+
+        // --- RENDER ---
+        function renderGrid() {
+            const container = document.getElementById('gameGrid');
+            // --- AJOUTER CETTE LIGNE ---
+            // Adapte le CSS grid au nombre de colonnes (10, 15 ou 18)
+            const gridSize = DIFFICULTIES[currentDiff].size;
+            container.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+            // ---------------------------
+
+
+            container.innerHTML = '';
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    const letter = gameState.grid[r][c];
+                    const div = document.createElement('div');
+                    div.className = letter ? 'cell-container' : 'cell-container blocked';
+                    if (letter) {
+                        const w = gameState.placed.find(x => x.r === r && x.c === c);
+                        if (w) {
+                            const num = document.createElement('span');
+                            num.className = 'cell-number';
+                            num.innerText = w.num;
+                            div.appendChild(num);
+                        }
+                        const input = document.createElement('input');
+                        input.className = 'cell';
+                        input.readOnly = true; // On garde readOnly pour éviter le clavier mobile natif
+                        input.dataset.ans = letter;
+                        input.dataset.r = r; input.dataset.c = c;
+
+                        // Gestion intelligente du clic
+                        input.onclick = () => {
+                            // Si on clique sur la case déjà active, on change de direction
+                            if (gameState.activeCell === input) {
+                                gameState.currentDirection = gameState.currentDirection === 'H' ? 'V' : 'H';
+                            } else {
+                                // Sinon, on essaie de deviner la meilleure direction
+                                // Si le mot est uniquement Horizontal ou uniquement Vertical, on force cette direction
+                                const isH = gameState.placed.some(w => w.dir === 'H' && w.r === r && c >= w.c && c < w.c + w.mot.length);
+                                const isV = gameState.placed.some(w => w.dir === 'V' && w.c === c && r >= w.r && r < w.r + w.mot.length);
+
+                                if (isH && !isV) gameState.currentDirection = 'H';
+                                else if (!isH && isV) gameState.currentDirection = 'V';
+                                // Si intersection, on garde la direction précédente par défaut ou H
+                            }
+                            setActive(input);
+                        };
+                        div.appendChild(input);
+                    }
+                    container.appendChild(div);
+                }
+            }
+        }
+
+        function renderDefs() {
+            switchTab(gameState.currentDirection === 'H' ? 'horizontal' : 'vertical');
+        }
+
+        function switchTab(dir) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            // Sélectionne le bon onglet visuellement
+            const tabIndex = dir === 'horizontal' ? 0 : 1;
+            document.querySelectorAll('.tab')[tabIndex].classList.add('active');
+
+            const list = document.getElementById('defList');
+            list.innerHTML = '';
+            const code = dir === 'horizontal' ? 'H' : 'V';
+            gameState.placed.filter(w => w.dir === code).sort((a, b) => a.num - b.num).forEach(w => {
+                const div = document.createElement('div');
+                div.className = 'def-item';
+                div.id = `def-${w.num}-${w.dir}`;
+                div.innerHTML = `<strong>${w.num}.</strong> ${w.definition}`;
+                div.onclick = () => {
+                    gameState.currentDirection = w.dir;
+                    const cell = document.querySelector(`.cell[data-r="${w.r}"][data-c="${w.c}"]`);
+                    if (cell) setActive(cell);
+                };
+                list.appendChild(div);
+            });
+        }
+
+        // --- INPUT & NAVIGATION ---
+
+        // NOUVEAU : Gestion du clavier physique
+        function setupPhysicalKeyboard() {
+            document.addEventListener('keydown', (e) => {
+                // Uniquement si on est dans l'écran de jeu
+                if (!document.getElementById('screen-game').classList.contains('active')) return;
+
+                const key = e.key.toUpperCase();
+
+                // Lettres A-Z
+                if (/^[A-Z]$/.test(key)) {
+                    handleKey(key);
+                }
+                // Backspace
+                else if (e.key === 'Backspace') {
+                    handleKey('⌫');
+                }
+                // Enter
+                else if (e.key === 'Enter') {
+                    handleKey('OK');
+                }
+                // Flèches directionnelles
+                else if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                    e.preventDefault();
+                    handleArrowKey(e.key);
+                }
+            });
+        }
+
+        function handleArrowKey(key) {
+            if (!gameState.activeCell) return;
+            const r = parseInt(gameState.activeCell.dataset.r);
+            const c = parseInt(gameState.activeCell.dataset.c);
+            let next = null;
+
+            if (key === 'ArrowUp') next = document.querySelector(`.cell[data-r="${r - 1}"][data-c="${c}"]`);
+            if (key === 'ArrowDown') next = document.querySelector(`.cell[data-r="${r + 1}"][data-c="${c}"]`);
+            if (key === 'ArrowLeft') next = document.querySelector(`.cell[data-r="${r}"][data-c="${c - 1}"]`);
+            if (key === 'ArrowRight') next = document.querySelector(`.cell[data-r="${r}"][data-c="${c + 1}"]`);
+
+            if (next) {
+                // Si on change de direction explicitement avec les flèches, on met à jour l'état
+                if (key === 'ArrowUp' || key === 'ArrowDown') gameState.currentDirection = 'V';
+                if (key === 'ArrowLeft' || key === 'ArrowRight') gameState.currentDirection = 'H';
+                setActive(next);
+            }
+        }
+
+        function renderKeyboard() {
+            const kb = document.getElementById('virtual-keyboard');
+            kb.innerHTML = '';
+            const rows = [['A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'], ['Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M'], ['⌫', 'W', 'X', 'C', 'V', 'B', 'N', 'OK']];
+            rows.forEach(row => {
+                const rDiv = document.createElement('div');
+                rDiv.className = 'kb-row';
+                row.forEach(k => {
+                    const btn = document.createElement('button');
+                    btn.className = `kb-key ${k.length > 1 ? 'wide' : ''}`;
+                    btn.innerText = k;
+                    btn.onclick = (e) => {
+                        e.stopPropagation(); // Empêche de perdre le focus
+                        handleKey(k);
+                    };
+                    rDiv.appendChild(btn);
+                });
+                kb.appendChild(rDiv);
+            });
+        }
+
+        function setActive(input) {
+            if (gameState.activeCell) gameState.activeCell.style.backgroundColor = '';
+            gameState.activeCell = input;
+            input.style.backgroundColor = '#bfdbfe';
+
+            // Mise à jour de l'affichage des définitions selon la direction actuelle
+            switchTab(gameState.currentDirection === 'H' ? 'horizontal' : 'vertical');
+            highlightDef(parseInt(input.dataset.r), parseInt(input.dataset.c));
+        }
+
+        function handleKey(k) {
+            if (!gameState.activeCell) return;
+            playSound('tap');
+            const cur = gameState.activeCell;
+            const r = parseInt(cur.dataset.r);
+            const c = parseInt(cur.dataset.c);
+
+            if (k === 'OK') { checkWin(); return; }
+
+            if (k === '⌫') {
+                if (cur.value === '') {
+                    // Reculer dans la direction actuelle
+                    const prevR = gameState.currentDirection === 'H' ? r : r - 1;
+                    const prevC = gameState.currentDirection === 'H' ? c - 1 : c;
+                    const prevCell = document.querySelector(`.cell[data-r="${prevR}"][data-c="${prevC}"]`);
+                    if (prevCell) {
+                        setActive(prevCell);
+                        // On ne supprime pas le contenu de la case précédente automatiquement pour éviter les erreurs
+                    }
+                } else {
+                    cur.value = '';
+                    cur.classList.remove('incorrect');
+                }
+                return;
+            }
+
+            // Saisie de lettre
+            cur.value = k;
+            checkCompletedWords();
+            cur.classList.remove('incorrect');
+
+            // Avancer dans la direction actuelle (gameState.currentDirection)
+            // C'est ici que la magie opère pour les intersections : on force la direction choisie
+            const nextR = gameState.currentDirection === 'H' ? r : r + 1;
+            const nextC = gameState.currentDirection === 'H' ? c + 1 : c;
+
+            const nextCell = document.querySelector(`.cell[data-r="${nextR}"][data-c="${nextC}"]`);
+
+            if (nextCell) {
+                setActive(nextCell);
+            } else {
+                // Fin du mot atteinte ? On checke la victoire potentielle
+                checkWin();
+            }
+        }
+
+        function highlightDef(r, c) {
+            document.querySelectorAll('.def-item').forEach(d => d.classList.remove('highlight'));
+
+            // On cherche le mot correspondant à la direction active
+            const activeWord = gameState.placed.find(w => {
+                if (gameState.currentDirection === 'H') {
+                    return w.dir === 'H' && w.r === r && c >= w.c && c < w.c + w.mot.length;
+                } else {
+                    return w.dir === 'V' && w.c === c && r >= w.r && r < w.r + w.mot.length;
+                }
+            });
+
+            if (activeWord) {
+                const el = document.getElementById(`def-${activeWord.num}-${activeWord.dir}`);
+                if (el) {
+                    el.classList.add('highlight');
+                    el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                }
+            }
+        }
+
+        function updateTimer() {
+            const diff = Math.floor((Date.now() - startTime) / 1000);
+            const m = Math.floor(diff / 60).toString().padStart(2, '0');
+            const s = (diff % 60).toString().padStart(2, '0');
+            document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+        }
+
+        function checkCompletedWords() {
+            gameState.placed.forEach(w => {
+                // Vérifier si ce mot est complet dans la grille
+                let isComplete = true;
+                let cells = [];
+                for (let i = 0; i < w.mot.length; i++) {
+                    const r = w.dir === 'H' ? w.r : w.r + i;
+                    const c = w.dir === 'H' ? w.c + i : w.c;
+                    const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+                    if (!cell || cell.value !== w.mot[i]) isComplete = false;
+                    cells.push(cell);
+                }
+
+                if (isComplete) {
+                    // Si le mot n'était pas déjà marqué comme fini (tu peux stocker ça dans w.finished si tu veux optimiser)
+                    let alreadyAnimated = cells.every(c => c.classList.contains('word-completed-marker'));
+
+                    if (!alreadyAnimated) {
+                        // Animation visuelle
+                        cells.forEach(c => {
+                            c.classList.add('word-completed'); // L'animation CSS
+                            c.classList.add('word-completed-marker'); // Marqueur pour ne pas rejouer
+                            c.style.background = "#dcfce7"; // Laisser vert clair
+                        });
+
+                        // Barrer la définition
+                        const defEl = document.getElementById(`def-${w.num}-${w.dir}`);
+                        if (defEl) {
+                            defEl.style.textDecoration = "line-through";
+                            defEl.style.opacity = "0.5";
+                        }
+
+                        // Petit son satisfaisant
+                        playSound('success');
+                    }
+                }
+            });
+        }
+
+        function checkWin() {
+            const cells = document.querySelectorAll('.cell');
+            let correct = 0;
+            let full = true;
+            cells.forEach(c => {
+                if (!c.value) full = false;
+                if (c.value === c.dataset.ans) {
+                    correct++;
+                } else if (c.value) {
+                    c.classList.add('incorrect'); c.classList.remove('correct');
+                }
+            });
+            gameState.score = (correct * 10) - gameState.penalty;
+            document.getElementById('scoreDisplay').innerText = gameState.score;
+
+            if (full && correct === cells.length) {
+                const endTime = Date.now();
+                const duration = Math.floor((endTime - startTime) / 1000); // Temps en secondes
+
+                // APPELER UPDATE STATS
+                updateStats({
+                    time: duration,
+                    wordCount: gameState.placed.length,
+                    penalty: gameState.penalty
+                });
+
+                // Appliquer le multiplicateur d'XP selon la difficulté
+                const diffMult = DIFFICULTIES[currentDiff].multiplier;
+                const finalXpGain = Math.floor(Math.max(10, gameState.score) * diffMult);
+
+
+                clearInterval(gameTimerInterval);
+                playSound('win');
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+
+                // On s'assure que le gain d'XP est au minimum de 10 points
+                // Même si le joueur a utilisé 50 indices et a un score de -2000
+                const xpGain = Math.max(10, gameState.score);
+
+                document.getElementById('finalScore').innerText = "+" + xpGain + " XP";
+
+                // Mise à jour de l'XP globale
+                let currentXP = parseInt(localStorage.getItem('cw_xp') || 0);
+                localStorage.setItem('cw_xp', currentXP + xpGain);
+
+                if (gameState.mode === 'daily') updateStreakLogic();
+                document.getElementById('victoryModal').style.display = 'flex';
+
+
+                updateXP();
+            }
+        }
+
+        // --- STREAK & XP (CORRIGÉ) ---
+        function updateStreakLogic() {
+            // On utilise l'heure locale du joueur, pas UTC
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const today = `${year}-${month}-${day}`; // Format YYYY-MM-DD local
+
+            const last = localStorage.getItem('cw_last');
+            let streak = parseInt(localStorage.getItem('cw_streak') || 0);
+
+            // Calcul de la date d'hier pour vérifier la consécutivité
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            const y_year = d.getFullYear();
+            const y_month = String(d.getMonth() + 1).padStart(2, '0');
+            const y_day = String(d.getDate()).padStart(2, '0');
+            const yesterday = `${y_year}-${y_month}-${y_day}`;
+
+            if (last !== today) {
+                if (last === yesterday) {
+                    // C'est consécutif : on incrémente
+                    streak++;
+                    document.getElementById('streakBonus').innerText = `🔥 Série augmentée : ${streak} jours !`;
+                } else {
+                    // C'est raté (plus d'un jour d'écart) : on recommence à 1
+                    streak = 1;
+                    document.getElementById('streakBonus').innerText = `🔥 Nouvelle série commencée !`;
+                }
+
+                // Sauvegarde immédiate
+                localStorage.setItem('cw_streak', streak);
+                localStorage.setItem('cw_last', today);
+            } else {
+                // Déjà joué aujourd'hui
+                document.getElementById('streakBonus').innerText = `🔥 Série du jour déjà validée !`;
+            }
+
+            updateStreakUI();
+        }
+
+        function updateStreakUI() {
+            const streak = localStorage.getItem('cw_streak') || 0;
+            document.getElementById('streakDisplay').innerText = streak;
+        }
+        // --- MISE A JOUR DE L'XP AMÉLIORÉE ---
+        function updateXP() {
+            const xp = parseInt(localStorage.getItem('cw_xp') || 0);
+
+            // Formule de niveau : Niv = racine(XP / 500)
+            // Inverse : XP pour Niv N = (N-1)^2 * 500
+
+            let lvl = Math.floor(Math.sqrt(xp / 500)) + 1;
+
+            // Calcul des bornes du niveau actuel
+            const xpStartOfLevel = Math.pow(lvl - 1, 2) * 500;
+            const xpForNextLevel = Math.pow(lvl, 2) * 500;
+
+            const xpNeeded = xpForNextLevel - xp;
+            const progressInLevel = xp - xpStartOfLevel;
+            const totalForLevel = xpForNextLevel - xpStartOfLevel;
+
+            // Pourcentage
+            const progPercent = (progressInLevel / totalForLevel) * 100;
+
+            // Affichage
+            document.getElementById('lvlDisplay').innerText = lvl;
+            document.getElementById('xpFill').style.width = Math.min(100, Math.max(0, progPercent)) + '%';
+
+            // Le texte ergonomique : "120 / 500 (+ 380)"
+            document.getElementById('xpText').innerHTML =
+                `${progressInLevel} / ${totalForLevel} <span style="color:var(--primary)">(-${xpNeeded})</span>`;
+        }
+        function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        function goToMenu() { showScreen('screen-menu'); }
+        function showAdmin() { showScreen('screen-admin'); }
+        function closeModal() { document.getElementById('victoryModal').style.display = 'none'; goToMenu(); }
+        function loadCustom() {
+            const input = document.getElementById('jsonInput').value;
+            try {
+                // 1. On essaie de convertir le texte en objets
+                const data = JSON.parse(input);
+
+                // 2. On vérifie qu'il y a assez de mots (Minimum 3 pour croiser)
+                if (!Array.isArray(data) || data.length < 3) {
+                    alert("Erreur : Il faut une liste d'au moins 3 mots pour créer une grille.");
+                    return;
+                }
+
+                // 3. On lance le jeu
+                startGame('custom', data);
+
+            } catch (e) {
+                // Affiche l'erreur technique précise
+                alert("Erreur de syntaxe JSON :\n" + e.message);
+            }
+        }
+        function shareUrl() { try { navigator.clipboard.writeText(window.location.origin + window.location.pathname + "?grid=" + btoa(unescape(encodeURIComponent(document.getElementById('jsonInput').value)))); alert('Lien copié !'); } catch (e) { } }
+        function shareEmoji() { navigator.clipboard.writeText(`CrossWord Master 🧠\nScore: ${gameState.score} XP\n🔥 Streak: ${localStorage.getItem('cw_streak')}\n\n${window.location.href.split('?')[0]}`); alert('Copié !'); }
+        function shareThisGame() {
+            const currentWords = gameState.placed.map(w => ({ mot: w.mot, definition: w.definition }));
+            const json = JSON.stringify(currentWords);
+            const b64 = btoa(unescape(encodeURIComponent(json)));
+            const url = window.location.origin + window.location.pathname + "?grid=" + b64;
+            navigator.clipboard.writeText(url);
+            alert("Lien de défi copié ! Envoie-le à un ami.");
+        }
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const t = audioCtx.currentTime;
+            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            if (type === 'tap') { o.frequency.setValueAtTime(600, t); g.gain.setValueAtTime(0.05, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05); o.start(t); o.stop(t + 0.05); }
+            else { o.frequency.setValueAtTime(440, t); o.frequency.linearRampToValueAtTime(880, t + 0.3); g.gain.setValueAtTime(0.1, t); g.gain.linearRampToValueAtTime(0, t + 0.3); o.start(t); o.stop(t + 0.3); }
+        }
+        const RNG = {
+            create: function (str) {
+                let h1 = 1779033703, h2 = 3144134277, h3 = 1013904242, h4 = 2773480762;
+                for (let i = 0, k; i < str.length; i++) { k = str.charCodeAt(i); h1 = h2 ^ Math.imul(h1 ^ k, 597399067); h2 = h3 ^ Math.imul(h2 ^ k, 2869860233); h3 = h4 ^ Math.imul(h3 ^ k, 951274213); h4 = h1 ^ Math.imul(h4 ^ k, 2716044179); }
+                h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067); h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233); h3 = Math.imul(h1 ^ (h3 >>> 17), 951274213); h4 = Math.imul(h2 ^ (h4 >>> 19), 2716044179);
+                let a = (h1 ^ h2 ^ h3 ^ h4) >>> 0, b = (h2 ^ h1) >>> 0, c = (h3 ^ h1) >>> 0, d = (h4 ^ h1) >>> 0;
+                return function () { a >>>= 0; b >>>= 0; c >>>= 0; d >>>= 0; var t = (a + b) | 0; a = b ^ b >>> 9; b = c + (c << 3) | 0; c = (c << 21 | c >>> 11); d = d + 1 | 0; t = t + d | 0; c = c + t | 0; return (t >>> 0) / 4294967296; }
+            },
+            shuffle: function (arr, rng) {
+                let cur = arr.length, rand;
+                while (cur != 0) { rand = Math.floor(rng() * cur); cur--;[arr[cur], arr[rand]] = [arr[rand], arr[cur]]; }
+                return arr;
+            }
+        };
+
+        // --- GESTION DES THEMES (COULEURS) ---
+        const COLOR_THEMES = {
+            "violet": {
+                primary: "#6366f1",
+                bg: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
+                green: "#22c55e"
+            },
+            "ocean": {
+                primary: "#0ea5e9",
+                bg: "linear-gradient(135deg, #0c4a6e 0%, #075985 100%)",
+                green: "#4ade80"
+            },
+            "nature": {
+                primary: "#10b981",
+                bg: "linear-gradient(135deg, #064e3b 0%, #14532d 100%)",
+                green: "#a3e635"
+            },
+            "sunset": {
+                primary: "#f59e0b",
+                bg: "linear-gradient(135deg, #7c2d12 0%, #9a3412 100%)",
+                green: "#fbbf24"
+            },
+            "neon": {
+                primary: "#d946ef",
+                bg: "linear-gradient(135deg, #4a044e 0%, #701a75 100%)",
+                green: "#f472b6"
+            }
+        };
+
+        function initTheme() {
+            const saved = localStorage.getItem('cw_color_theme') || 'violet';
+            applyTheme(saved);
+            renderColorPicker(saved);
+        }
+
+        function applyTheme(name) {
+            const theme = COLOR_THEMES[name];
+            const root = document.documentElement;
+
+            // On change les variables CSS dynamiquement
+            root.style.setProperty('--primary', theme.primary);
+            root.style.setProperty('--bg-gradient', theme.bg);
+            root.style.setProperty('--green', theme.green);
+
+            localStorage.setItem('cw_color_theme', name);
+            renderColorPicker(name);
+        }
+
+        function renderColorPicker(activeName) {
+            const container = document.getElementById('themeContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            Object.keys(COLOR_THEMES).forEach(key => {
+                const t = COLOR_THEMES[key];
+                const dot = document.createElement('div');
+                dot.className = `theme-dot ${key === activeName ? 'active' : ''}`;
+                dot.style.background = t.primary; // La couleur du rond est la couleur primaire
+                dot.onclick = () => applyTheme(key);
+                container.appendChild(dot);
+            });
+        }
+
+        function useHint() {
+            // 1. Vérifier si le joueur a assez de points (ou XP)
+            // Ici on tape dans le score actuel de la partie pour pénaliser le score final
+            if (gameState.score < 50 && gameState.score > -200) {
+                // On autorise un score négatif un peu, ou on bloque
+                if (!confirm("Attention, cela va réduire votre score de 50 points ! Continuer ?")) return;
+            }
+
+            // 2. Trouver toutes les cases vides ou fausses
+            const candidates = [];
+            document.querySelectorAll('.cell').forEach(cell => {
+                if (cell.value === '' || cell.value !== cell.dataset.ans) {
+                    candidates.push(cell);
+                }
+            });
+
+            if (candidates.length === 0) return; // Grille déjà finie
+
+            // 3. En choisir une au hasard
+            const luckyCell = candidates[Math.floor(Math.random() * candidates.length)];
+
+            // 4. Révéler la lettre
+            luckyCell.value = luckyCell.dataset.ans;
+            luckyCell.classList.add('correct');
+            luckyCell.classList.remove('incorrect');
+            // On la verrouille pour montrer que c'est un indice
+            luckyCell.style.color = 'var(--primary)';
+            luckyCell.style.fontWeight = 'bold';
+
+            // 5. Pénalité
+            gameState.penalty += 50;
+            checkWin();
+            playSound('tap'); // Ou un son spécial "magic"
+
+        }
+
+        /* --- INITIALISATION UI --- */
+        // Appeler cette fonction dans init() !
+        function initDiffUI() {
+            const container = document.getElementById('diffSelector');
+            container.innerHTML = '';
+            Object.keys(DIFFICULTIES).forEach(k => {
+                const d = DIFFICULTIES[k];
+                const btn = document.createElement('div');
+                btn.className = `diff-btn ${k === currentDiff ? 'active' : ''}`;
+                btn.innerText = d.label;
+                btn.onclick = () => {
+                    currentDiff = k;
+                    initDiffUI();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        /* --- GESTION DES STATS --- */
+        function getStats() {
+            return JSON.parse(localStorage.getItem('cw_stats')) || {
+                gamesPlayed: 0,
+                wordsFound: 0,
+                fastestWin: null,
+                perfectGames: 0,
+                unlockedAch: []
+            };
+        }
+
+        /* --- FONCTION UPDATE STATS COMPLÈTE --- */
+        function updateStats(winData) {
+            // 1. Récupération des stats existantes
+            let stats = JSON.parse(localStorage.getItem('cw_stats')) || {
+                unlockedAch: [],
+                counters: {
+                    totalGames: 0,
+                    totalWords: 0,
+                    winsEasy: 0,
+                    winsNormal: 0,
+                    winsHard: 0,
+                    perfectGames: 0,
+                    hintsUsedTotal: 0,
+                    streakDays: 0,
+                    techWins: 0,
+                    animalWins: 0,
+                    capitalWins: 0
+                },
+                fastestWin: null
+            };
+
+            // Initialisation si counters n'existe pas (pour compatibilité)
+            if (!stats.counters) stats.counters = {};
+            const c = stats.counters; // Alias raccourci
+
+            // 2. Mise à jour des compteurs
+            c.totalGames = (c.totalGames || 0) + 1;
+            c.totalWords = (c.totalWords || 0) + winData.wordCount;
+
+            // Incrémentation par difficulté
+            if (currentDiff === 'easy') c.winsEasy = (c.winsEasy || 0) + 1;
+            if (currentDiff === 'normal') c.winsNormal = (c.winsNormal || 0) + 1;
+            if (currentDiff === 'hard') c.winsHard = (c.winsHard || 0) + 1;
+
+            // Incrémentation par thème
+            if (currentPack === 'tech') c.techWins = (c.techWins || 0) + 1;
+            if (currentPack === 'animaux') c.animalWins = (c.animalWins || 0) + 1;
+            if (currentPack === 'capitales') c.capitalWins = (c.capitalWins || 0) + 1;
+
+            // Partie parfaite
+            if (winData.penalty === 0) c.perfectGames = (c.perfectGames || 0) + 1;
+
+            // Record de temps
+            if (!stats.fastestWin || winData.time < stats.fastestWin) {
+                stats.fastestWin = winData.time;
+            }
+
+            // 3. Vérification des succès (Unlock Logic)
+            const newUnlocks = [];
+
+            // Fonction helper locale
+            const unlock = (id) => {
+                if (!stats.unlockedAch.includes(id)) {
+                    stats.unlockedAch.push(id);
+                    newUnlocks.push(id);
+                }
+            };
+
+            // --- A. QUANTITÉ (Apprentissage) ---
+            if (c.totalGames >= 1) unlock('baby_steps');
+            if (c.totalGames >= 5) unlock('warm_up');
+            if (c.totalGames >= 10) unlock('apprentice');
+            if (c.totalGames >= 100) unlock('century');
+
+            // --- B. STREAK (Récupération depuis l'autre localStorage) ---
+            const currentStreak = parseInt(localStorage.getItem('cw_streak') || 0);
+            if (currentStreak >= 3) unlock('regular');
+            if (currentStreak >= 7) unlock('addict');
+            if (currentStreak >= 30) unlock('marathon');
+
+            // --- C. VITESSE (Chrono) ---
+            if (winData.time < 180) unlock('runner'); // < 3 min
+            if (winData.time < 120) unlock('sprinter'); // < 2 min
+            if (winData.time < 60) unlock('flash'); // < 1 min
+            if (winData.time < 30) unlock('light_speed'); // < 30s
+
+            // --- D. ÉRUDITION (Mots) ---
+            if (c.totalWords >= 50) unlock('reader');
+            if (c.totalWords >= 100) unlock('writer');
+            if (c.totalWords >= 500) unlock('poet');
+            if (c.totalWords >= 1000) unlock('dictionary');
+            if (c.totalWords >= 5000) unlock('encyclopedia');
+
+            // --- E. PERFECTION ---
+            if (winData.penalty === 0) {
+                unlock('clean');
+                if (c.perfectGames >= 5) unlock('sharp');
+                if (c.perfectGames >= 20) unlock('eagle_eye');
+                if (c.perfectGames >= 50) unlock('oracle');
+                if (currentDiff === 'hard') unlock('godlike'); // Difficile sans indice
+            }
+
+            // --- F. DIFFICULTÉ ---
+            if (currentDiff === 'normal' || currentDiff === 'hard') unlock('brave');
+            if (c.winsNormal >= 5) unlock('knight');
+            if (currentDiff === 'hard') unlock('hero');
+            if (c.winsHard >= 10) unlock('legend');
+
+            // --- G. THÈMES ---
+            if (c.techWins >= 3) unlock('tech_fan');
+            if (c.animalWins >= 3) unlock('zoo_keeper');
+            if (c.capitalWins >= 3) unlock('traveler');
+            if (c.techWins >= 1 && c.animalWins >= 1 && c.capitalWins >= 1) unlock('polymath');
+
+            // --- H. HORAIRES & DATES ---
+            const now = new Date();
+            const hour = now.getHours();
+            const day = now.getDay(); // 0 = Dimanche, 6 = Samedi
+
+            if (hour >= 22 || hour < 4) unlock('night_owl');
+            if (hour >= 4 && hour < 8) unlock('early_bird');
+            if (hour >= 3 && hour < 5) unlock('earlier'); // Entre 3h et 5h du mat
+            if (day === 0 || day === 6) unlock('weekend_warrior');
+
+            // --- I. NIVEAUX (XP) ---
+            const xp = parseInt(localStorage.getItem('cw_xp') || 0);
+            const lvl = Math.floor(Math.sqrt(xp / 500)) + 1;
+
+            if (lvl >= 5) unlock('level_5');
+            if (lvl >= 10) unlock('level_10');
+            if (lvl >= 20) unlock('level_20');
+            if (lvl >= 50) unlock('level_50');
+
+            // --- J. SPÉCIAL ---
+            // 'Math Genius' : Score exact de 1000
+            // On suppose que gameState.score est la valeur finale
+            if (gameState.score === 1000) unlock('math_genius');
+
+
+            // 4. Sauvegarde
+            localStorage.setItem('cw_stats', JSON.stringify(stats));
+
+            // 5. Affichage des notifications (Toasts)
+            newUnlocks.forEach(id => {
+                const ach = ACHIEVEMENTS.find(a => a.id === id);
+                if (ach) showToast(ach);
+            });
+        }
+
+        /* --- AFFICHAGE PROFIL --- */
+        /* --- AFFICHAGE PROFIL SÉCURISÉ --- */
+        function showProfile() {
+            // 1. Récupération sécurisée avec valeurs par défaut
+            const rawStats = localStorage.getItem('cw_stats');
+            const stats = rawStats ? JSON.parse(rawStats) : {
+                counters: { totalGames: 0, totalWords: 0, perfectGames: 0 },
+                fastestWin: null,
+                unlockedAch: []
+            };
+
+            // Sécurité supplémentaire si stats existe mais sans 'counters' (vieux profil)
+            const c = stats.counters || { totalGames: 0, totalWords: 0, perfectGames: 0 };
+
+            // 2. Injection dans le HTML (avec vérification que l'élément existe)
+            const elGames = document.getElementById('statGames');
+            const elWords = document.getElementById('statWords');
+            const elTime = document.getElementById('statBestTime');
+            const elPerfect = document.getElementById('statPerfect');
+
+            if (elGames) elGames.innerText = c.totalGames || 0;
+            if (elWords) elWords.innerText = c.totalWords || 0;
+            if (elPerfect) elPerfect.innerText = c.perfectGames || 0;
+
+            // Formatage joli pour le temps (ex: 65s -> 1m 05s)
+            if (elTime) {
+                if (stats.fastestWin) {
+                    const m = Math.floor(stats.fastestWin / 60);
+                    const s = stats.fastestWin % 60;
+                    elTime.innerText = m > 0 ? `${m}m ${s}s` : `${s}s`;
+                } else {
+                    elTime.innerText = '-';
+                }
+            }
+
+            // 3. Affichage des succès
+            const list = document.getElementById('achievementsList');
+            if (list) {
+                list.innerHTML = '';
+
+                // On trie pour afficher les débloqués en premier, puis par tier (Bronze > Platinum visuellement)
+                const sortedAch = [...ACHIEVEMENTS].sort((a, b) => {
+                    const unlockedA = stats.unlockedAch.includes(a.id);
+                    const unlockedB = stats.unlockedAch.includes(b.id);
+                    if (unlockedA && !unlockedB) return -1;
+                    if (!unlockedA && unlockedB) return 1;
+                    return 0;
+                });
+
+                sortedAch.forEach(ach => {
+                    const isUnlocked = stats.unlockedAch.includes(ach.id);
+                    const card = document.createElement('div');
+                    // Ajout de data-tier pour le CSS doré/argenté qu'on a vu avant
+                    card.className = `achievement-card ${isUnlocked ? 'unlocked' : ''}`;
+                    card.dataset.tier = ach.tier;
+
+                    card.innerHTML = `
+                    <div class="ach-icon">${ach.icon}</div>
+                    <div class="ach-info">
+                        <h4>${ach.title}</h4>
+                        <p>${ach.desc}</p>
+                    </div>
+                    ${isUnlocked ? '<div style="margin-left:auto; color:var(--green); font-weight:bold;">✓</div>' : ''}
+                `;
+                    list.appendChild(card);
+                });
+            }
+
+            showScreen('screen-profile');
+        }
+
+        function showToast(ach) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+            <div style="font-size:2rem">${ach.icon}</div>
+            <div>
+                <div style="font-weight:bold; color:var(--green)">Succès Débloqué !</div>
+                <div>${ach.title}</div>
+            </div>
+        `;
+            container.appendChild(toast);
+            playSound('success'); // Réutiliser ton son de succès
+        }
+
+        /* --- GESTION EXPORT / IMPORT --- */
+
+        function exportProfile() {
+            // 1. Rassembler toutes les données du localStorage
+            const data = {
+                xp: localStorage.getItem('cw_xp'),
+                stats: localStorage.getItem('cw_stats'),
+                streak: localStorage.getItem('cw_streak'),
+                lastPlayed: localStorage.getItem('cw_last'),
+                theme: localStorage.getItem('cw_color_theme'),
+                // Signature pour éviter de charger n'importe quoi
+                app: 'CrossWordGen_Backup',
+                date: new Date().toISOString()
+            };
+
+            // 2. Créer le fichier Blob
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            // 3. Déclencher le téléchargement
+            const a = document.createElement('a');
+            a.href = url;
+            // Nom du fichier : backup_2023-10-27.json
+            a.download = `cw_backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert("Sauvegarde téléchargée ! Copiez ce fichier sur votre autre appareil.");
+        }
+
+        function importProfile(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    // 1. Lire et parser le fichier
+                    const data = JSON.parse(e.target.result);
+
+                    // 2. Vérification de sécurité basique
+                    if (data.app !== 'CrossWordGen_Backup') {
+                        throw new Error("Ce fichier n'est pas une sauvegarde valide.");
+                    }
+
+                    // 3. Demander confirmation (car ça écrase tout)
+                    if (!confirm("Attention : Cela va remplacer votre progression actuelle (XP, Succès...). Continuer ?")) {
+                        input.value = ''; // Reset l'input
+                        return;
+                    }
+
+                    // 4. Restaurer les données
+                    if (data.xp) localStorage.setItem('cw_xp', data.xp);
+                    if (data.stats) localStorage.setItem('cw_stats', data.stats);
+                    if (data.streak) localStorage.setItem('cw_streak', data.streak);
+                    if (data.lastPlayed) localStorage.setItem('cw_last', data.lastPlayed);
+                    if (data.theme) localStorage.setItem('cw_color_theme', data.theme);
+
+                    // 5. Rafraîchir l'interface
+                    alert("Profil restauré avec succès ! Le jeu va recharger.");
+                    location.reload();
+
+                } catch (err) {
+                    alert("Erreur lors de l'import : " + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+
+
+
+
+
+        init();
+    </script>
+
+
+
+</body>
+
+</html>
