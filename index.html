@@ -335,12 +335,9 @@
 
         /* --- GRILLE (SMART GRID) --- */
         .grid-wrapper {
-            width: 100%;
-            overflow: auto;
-            padding: 5px;
-            display: flex;
-            justify-content: center;
-        }
+    padding-bottom: 300px !important; /* Laisse la place pour le clavier virtuel */
+    align-items: flex-start; /* Colle la grille en haut */
+}
 
         .crossword-grid {
             display: grid;
@@ -732,6 +729,35 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
+        /* --- BULLE DE DÉFINITION ACTIVE (STICKY) --- */
+.active-clue-bar {
+    position: sticky; /* Reste visible même si on scroll */
+    top: 0; /* Ou bottom selon préférence, ici haut de grille */
+    background: var(--primary);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: none; /* Caché par défaut */
+    z-index: 100;
+    animation: slideDown 0.3s ease;
+}
+.active-clue-bar.visible { display: block; }
+
+@keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* --- GRILLE MOBILE --- */
+/* Pour éviter que le clavier cache la grille */
+@media (max-width: 900px) {
+    .grid-wrapper {
+        align-items: flex-start; /* Aligne en haut */
+        padding-bottom: 50px; /* Marge pour scroll */
+    }
+}
+
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -753,217 +779,215 @@
 <body>
 
     <div class="app-container">
-        <!-- HEADER -->
-        <header>
-            <div class="logo">
-                <h1>CrossWord<span>Gen</span></h1>
-            </div>
-            <div class="stats-bar glass-panel">
-
-                <div style="margin-right:10px">🔥 <span id="streakDisplay">0</span></div>
-
-                <div style="display:flex; flex-direction:column; align-items:end;">
-                    <div style="display:flex; align-items:center; width:100%">
-                        <span style="margin-right:5px">Niv. <span id="lvlDisplay">1</span></span>
-                        <div class="xp-track">
-                            <div id="xpFill" class="xp-fill"></div>
-                        </div>
-                    </div>
-                    <!-- Le nouveau texte d'XP -->
-                    <div id="xpText" class="xp-details">0 / 500 XP</div>
-                </div>
-            </div>
-        </header>
-
-        <!-- MENU -->
-        <div id="screen-menu" class="screen active">
-
-
-
-            <div class="menu-box glass-panel">
-                <h2>Menu Principal</h2>
-                <!-- NOUVEAU : SÉLECTEUR DE COULEUR -->
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <p style="font-size:0.8rem; opacity:0.6; margin-bottom:5px;">🎨 Personnaliser l'ambiance</p>
-                    <div class="theme-picker" id="themeContainer">
-                        <!-- Généré par JS -->
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <h1>CrossWord<span>Gen</span></h1>
+        </div>
+        <div class="stats-bar glass-panel">
+            <div style="margin-right:10px; font-weight:bold;">🔥 <span id="streakDisplay">0</span></div>
+            
+            <div style="display:flex; flex-direction:column; align-items:end;">
+                <div style="display:flex; align-items:center; width:100%">
+                    <span style="margin-right:8px; font-size:0.8rem;">Niv. <span id="lvlDisplay">1</span></span>
+                    <div class="xp-track">
+                        <div id="xpFill" class="xp-fill"></div>
                     </div>
                 </div>
-                <!-- Fin du nouveau bloc -->
-
-                <div style="margin-top:20px; text-align:left;">
-                    <label style="font-size:0.9rem; color:#94a3b8; margin-left:5px;">Choisir un thème :</label>
-                    <div class="theme-selector" id="themeSelector">
-                        <!-- Généré en JS -->
-                    </div>
-                </div>
-
-                <!-- Dans screen-menu, juste avant class="menu-grid" -->
-                <div style="text-align:center; margin: 20px 0;">
-                    <label style="font-size:0.8rem; opacity:0.7">Difficulté :</label>
-                    <div class="diff-selector" id="diffSelector">
-                        <!-- Généré par JS -->
-                    </div>
-                </div>
-
-                <div class="menu-grid">
-                    <div class="menu-btn" onclick="startGame('daily')">
-                        <span class="menu-icon">📅</span>
-                        <div>
-                            <h3>Défi du Jour</h3>
-                            <small style="opacity:0.7">Grille unique mondiale</small>
-                        </div>
-                    </div>
-                    <div class="menu-btn" onclick="startGame('random')">
-                        <span class="menu-icon">🎲</span>
-                        <div>
-                            <h3>Partie Rapide</h3>
-                            <small style="opacity:0.7">Entraînement infini</small>
-                        </div>
-                    </div>
-                    <div class="menu-btn" onclick="showAdmin()">
-                        <span class="menu-icon">🛠️</span>
-                        <div>
-                            <h3>Créateur</h3>
-                            <small style="opacity:0.7">Créer une grille</small>
-                        </div>
-                    </div>
-                    <div class="menu-btn" onclick="showProfile()">
-                        <span class="menu-icon">🏆</span>
-                        <div>
-                            <h3>Profil & Succès</h3>
-                            <small style="opacity:0.7">Voir mes stats</small>
-                        </div>
-                    </div>
-                </div>
+                <div id="xpText" class="xp-details">0 / 500</div>
             </div>
         </div>
-
-        <!-- JEU -->
-        <div id="screen-game" class="screen">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <button class="btn btn-secondary" onclick="goToMenu()">⬅ Retour</button>
-                <div style="display:flex; gap:10px;">
-                    <div class="glass-panel" style="padding:5px 15px; font-weight:bold; font-family:monospace">
-                        ⏱️ <span id="timerDisplay">00:00</span>
-                    </div>
-                    <button class="btn btn-share" onclick="shareThisGame()">🔗 Défier un ami</button>
-                    <div class="glass-panel"
-                        style="padding:5px 15px; font-weight:bold; display:flex; align-items:center;">
-                        Score: <span id="scoreDisplay" style="margin-left:5px">0</span>
-                    </div>
-                    <button class="btn btn-secondary" onclick="useHint()" title="Coût: 50 points">💡 Indice
-                        (-50)</button>
-                </div>
-            </div>
-
-            <div class="game-layout">
-                <div class="grid-wrapper">
-                    <div id="gameGrid" class="crossword-grid"></div>
-                </div>
-
-                <div class="defs-panel glass-panel">
-                    <div class="defs-tabs">
-                        <div class="tab active" onclick="switchTab('horizontal')">Horizontal</div>
-                        <div class="tab" onclick="switchTab('vertical')">Vertical</div>
-                    </div>
-                    <div id="defList" class="def-list"></div>
-                </div>
-            </div>
-
-            <!-- Clavier Virtuel -->
-            <div id="virtual-keyboard" class="keyboard-container"></div>
+        <!-- Chrono (visible en jeu) -->
+        <div id="timerContainer" class="glass-panel" style="display:none; padding:5px 12px; font-family:monospace; font-weight:bold;">
+            ⏱️ <span id="timerDisplay">00:00</span>
         </div>
+    </header>
 
-        <!-- ADMIN -->
-        <div id="screen-admin" class="screen">
-            <div class="menu-box glass-panel">
-                <h2>Créateur</h2>
-                <textarea id="jsonInput" placeholder='[{"mot":"TEST","definition":"Essai"}]'></textarea>
-                <div style="display:grid; gap:10px; grid-template-columns: 1fr 1fr;">
-                    <button class="btn" onclick="loadCustom()">Jouer</button>
-                    <button class="btn btn-secondary" onclick="goToMenu()">Retour</button>
-                </div>
-                <button class="btn" style="width:100%; margin-top:10px; background:var(--green);"
-                    onclick="shareUrl()">Copier le Lien de partage</button>
-            </div>
-        </div>
-
-        <div id="screen-profile" class="screen">
-            <div class="menu-box glass-panel" style="max-width:800px">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h2>Mon Profil</h2>
-                    <button class="btn btn-secondary" onclick="goToMenu()">Fermer</button>
-                </div>
-
-                <!-- Statistiques Globales -->
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <!-- ID IMPORTANT: statGames -->
-                        <span class="stat-val" id="statGames">0</span>
-                        Parties Jouées
-                    </div>
-                    <div class="stat-box">
-                        <!-- ID IMPORTANT: statWords -->
-                        <span class="stat-val" id="statWords">0</span>
-                        Mots Trouvés
-                    </div>
-                    <div class="stat-box">
-                        <!-- ID IMPORTANT: statBestTime -->
-                        <span class="stat-val" id="statBestTime">-</span>
-                        Record (s)
-                    </div>
-                    <div class="stat-box">
-                        <!-- ID IMPORTANT: statPerfect -->
-                        <span class="stat-val" id="statPerfect">0</span>
-                        Sans Indices
-                    </div>
-                </div>
-
-                <h3 style="margin:20px 0 10px 0; border-top:1px solid var(--border); padding-top:20px;">Succès Débloqués
-                </h3>
-                <div id="achievementsList" class="achievements-list">
+    <!-- MENU PRINCIPAL -->
+    <div id="screen-menu" class="screen active">
+        <div class="menu-box glass-panel">
+            <h2>Menu Principal</h2>
+            
+            <!-- Personnalisation -->
+            <div style="margin: 20px 0;">
+                <p style="font-size:0.8rem; opacity:0.6; margin-bottom:8px;">🎨 Thème & Ambiance</p>
+                <div class="theme-picker" id="themeContainer">
                     <!-- Généré par JS -->
                 </div>
-                <!-- DANS screen-profile, APRÈS LA LISTE DES SUCCÈS -->
+            </div>
 
-                <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
-                    <h3 style="margin-bottom: 15px;">Sauvegarde & Synchro</h3>
-                    <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 15px;">
-                        Transférez votre progression vers un autre appareil.
-                    </p>
-
-                    <div style="display: flex; gap: 10px; justify-content: center;">
-                        <button class="btn btn-secondary" onclick="exportProfile()">
-                            📤 Exporter Profil
-                        </button>
-
-                        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">
-                            📥 Importer Profil
-                        </button>
-                        <!-- Input caché pour le fichier -->
-                        <input type="file" id="importFile" style="display: none" accept=".json"
-                            onchange="importProfile(this)">
-                    </div>
+            <!-- Difficulté -->
+            <div style="margin: 20px 0;">
+                <label style="font-size:0.8rem; opacity:0.7">Difficulté :</label>
+                <div class="diff-selector" id="diffSelector">
+                    <!-- Généré par JS -->
                 </div>
             </div>
-        </div>
 
-        <!-- Conteneur pour les notifications -->
-        <div id="toastContainer" class="toast-container"></div>
+            <!-- Choix du pack de mots -->
+            <div style="text-align:left; margin-bottom:10px;">
+                <label style="font-size:0.9rem; color:#94a3b8; margin-left:5px;">Sujet :</label>
+                <div class="theme-selector" id="themeSelector">
+                    <!-- Généré par JS -->
+                </div>
+            </div>
 
-        <!-- MODAL VICTOIRE -->
-        <div id="victoryModal" class="modal">
-            <div class="modal-content glass-panel">
-                <h2>Victoire ! 🎉</h2>
-                <div id="finalScore" class="score-big"></div>
-                <p id="streakBonus" style="margin-bottom:20px; color:#fbbf24;"></p>
-                <button class="btn" onclick="closeModal()">Continuer</button>
-                <button class="btn" style="background:var(--green); margin-left:10px;" onclick="shareEmoji()">Partager
-                    📱</button>
+            <!-- Boutons Actions -->
+            <div class="menu-grid">
+                <div class="menu-btn" onclick="startGame('daily')">
+                    <span class="menu-icon">📅</span>
+                    <div>
+                        <h3>Défi du Jour</h3>
+                        <small style="opacity:0.7">Grille unique mondiale</small>
+                    </div>
+                </div>
+                <div class="menu-btn" onclick="startGame('random')">
+                    <span class="menu-icon">🎲</span>
+                    <div>
+                        <h3>Partie Rapide</h3>
+                        <small style="opacity:0.7">Entraînement infini</small>
+                    </div>
+                </div>
+                <div class="menu-btn" onclick="showProfile()">
+                    <span class="menu-icon">🏆</span>
+                    <div>
+                        <h3>Profil & Succès</h3>
+                        <small style="opacity:0.7">Stats, Badges, Sauvegarde</small>
+                    </div>
+                </div>
+                <div class="menu-btn" onclick="showAdmin()">
+                    <span class="menu-icon">🛠️</span>
+                    <div>
+                        <h3>Créateur</h3>
+                        <small style="opacity:0.7">Créer une grille</small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- ECRAN JEU -->
+    <div id="screen-game" class="screen">
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+            <button class="btn btn-secondary" onclick="goToMenu()">⬅ Menu</button>
+            
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-secondary" onclick="useHint()" title="-50 pts">💡 Indice</button>
+                <button class="btn btn-share" onclick="shareThisGame()">🔗 Défier</button>
+                <div class="glass-panel" style="padding:8px 15px; font-weight:bold; display:flex; align-items:center;">
+                    Score: <span id="scoreDisplay" style="margin-left:5px; color:var(--green);">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulle de définition active (Nouveau) -->
+<div id="activeClueBar" class="active-clue-bar">
+    <span id="activeClueText">Sélectionnez une case...</span>
+</div>
+
+
+        <div class="game-layout">
+            <div class="grid-wrapper">
+                <div id="gameGrid" class="crossword-grid"></div>
+            </div>
+            
+            <div class="defs-panel glass-panel">
+                <div class="defs-tabs">
+                    <div class="tab active" onclick="switchTab('horizontal')">Horizontal</div>
+                    <div class="tab" onclick="switchTab('vertical')">Vertical</div>
+                </div>
+                <div id="defList" class="def-list"></div>
+            </div>
+        </div>
+        
+        <!-- Clavier Virtuel (Mobile) -->
+        <div id="virtual-keyboard" class="keyboard-container"></div>
+    </div>
+
+    <!-- ECRAN PROFIL -->
+    <div id="screen-profile" class="screen">
+        <div class="menu-box glass-panel" style="max-width:800px">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2>Mon Profil</h2>
+                <button class="btn btn-secondary" onclick="goToMenu()">Fermer</button>
+            </div>
+
+            <!-- Stats Grid (IDs corrigés pour le JS) -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-val" id="statGames">0</span>
+                    <span style="font-size:0.8rem; opacity:0.7">Parties</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-val" id="statWords">0</span>
+                    <span style="font-size:0.8rem; opacity:0.7">Mots</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-val" id="statBestTime">-</span>
+                    <span style="font-size:0.8rem; opacity:0.7">Record</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-val" id="statPerfect">0</span>
+                    <span style="font-size:0.8rem; opacity:0.7">Parfaites</span>
+                </div>
+            </div>
+
+            <h3 style="margin:20px 0 10px 0; border-top:1px solid var(--border); padding-top:20px; text-align:left;">
+                Succès Débloqués
+            </h3>
+            <div id="achievementsList" class="achievements-list">
+                <!-- Généré par JS -->
+            </div>
+
+            <!-- Sauvegarde & Import -->
+            <div style="margin-top: 30px; background:rgba(0,0,0,0.2); padding:15px; border-radius:12px;">
+                <h4 style="margin-bottom: 10px;">☁️ Sauvegarde & Synchro</h4>
+                <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 15px;">
+                    Gardez votre progression en changeant d'appareil.
+                </p>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap:wrap;">
+                    <button class="btn btn-secondary" onclick="exportProfile()">📤 Sauvegarder (Fichier)</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Charger</button>
+                    <input type="file" id="importFile" style="display: none" accept=".json" onchange="importProfile(this)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ECRAN ADMIN (CRÉATEUR) -->
+    <div id="screen-admin" class="screen">
+        <div class="menu-box glass-panel">
+            <h2>Créateur de Grille</h2>
+            <p style="font-size:0.8rem; opacity:0.7; margin-bottom:10px;">Collez votre JSON ci-dessous :</p>
+            <textarea id="jsonInput" placeholder='[&#10;  {"mot":"CHAT", "definition":"Animal"},&#10;  {"mot":"CHIEN", "definition":"Aboye"}&#10;]'></textarea>
+            
+            <div style="display:grid; gap:10px; grid-template-columns: 1fr 1fr;">
+                <button class="btn" onclick="loadCustom()">🎮 Tester</button>
+                <button class="btn btn-secondary" onclick="goToMenu()">Retour</button>
+            </div>
+            <button class="btn btn-share" style="width:100%; margin-top:10px;" onclick="shareUrl()">🔗 Copier le Lien de Partage</button>
+        </div>
+    </div>
+
+    <!-- MODAL VICTOIRE -->
+    <div id="victoryModal" class="modal">
+        <div class="modal-content glass-panel">
+            <div style="font-size:3rem;">🎉</div>
+            <h2>Victoire !</h2>
+            <div id="finalScore" class="score-big">+100 XP</div>
+            <p id="streakBonus" style="color:#fbbf24; font-weight:bold; margin-bottom:20px;"></p>
+            
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button class="btn" onclick="closeModal()">Continuer</button>
+                <button class="btn btn-share" onclick="shareEmoji()">Partager 📱</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOASTS (NOTIFICATIONS SUCCÈS) -->
+    <div id="toastContainer" class="toast-container"></div>
+</div>
+
     <script>
         /* --- CONFIGURATION DIFFICULTÉ --- */
         const DIFFICULTIES = {
@@ -1412,18 +1436,60 @@
             });
         }
 
-        function setActive(input) {
-            if (gameState.activeCell) gameState.activeCell.style.backgroundColor = '';
-            gameState.activeCell = input;
-            input.style.backgroundColor = '#bfdbfe';
+            function setActive(input) {
+        if(gameState.activeCell) gameState.activeCell.style.backgroundColor = '';
+        gameState.activeCell = input;
+        input.style.backgroundColor = '#bfdbfe';
+        
+        // 1. Trouver le mot actif selon la direction
+        const r = parseInt(input.dataset.r);
+        const c = parseInt(input.dataset.c);
+        const activeWord = gameState.placed.find(w => {
+            if (gameState.currentDirection === 'H') {
+                return w.dir === 'H' && w.r === r && c >= w.c && c < w.c + w.mot.length;
+            } else {
+                return w.dir === 'V' && w.c === c && r >= w.r && r < w.r + w.mot.length;
+            }
+        });
 
-            // Mise à jour de l'affichage des définitions selon la direction actuelle
-            switchTab(gameState.currentDirection === 'H' ? 'horizontal' : 'vertical');
-            highlightDef(parseInt(input.dataset.r), parseInt(input.dataset.c));
+        // 2. Mettre à jour la BULLE FLOTTANTE (Mobile Friendly)
+        const clueBar = document.getElementById('activeClueBar');
+        const clueText = document.getElementById('activeClueText');
+        
+        if (activeWord) {
+            clueBar.classList.add('visible');
+            // Affiche "1. Indice du mot"
+            clueText.innerHTML = `<strong>${activeWord.num}.</strong> ${activeWord.definition}`;
+            
+            // NE PLUS SCROLLER LA LISTE (C'est ça qui était gênant)
+            // On garde juste le highlight visuel dans la liste PC
+            document.querySelectorAll('.def-item').forEach(d => d.classList.remove('highlight'));
+            const listEl = document.getElementById(`def-${activeWord.num}-${activeWord.dir}`);
+            if(listEl) listEl.classList.add('highlight');
+        } else {
+            clueBar.classList.remove('visible');
         }
+    }
+
 
         function handleKey(k) {
             if (!gameState.activeCell) return;
+
+// --- NOUVEAU : EMPÊCHER MODIF SI DÉJÀ VALIDÉ ---
+        // Si la case a la classe "word-completed", on bloque l'écriture
+        // Sauf si c'est une navigation (ArrowKeys gérées ailleurs)
+        if (gameState.activeCell.classList.contains('correct') && k !== 'OK') {
+             // On peut autoriser le déplacement mais pas l'écrasement
+             // Pour l'instant on laisse passer juste pour naviguer,
+             // mais on empêche de changer la valeur
+             if (!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(k)) {
+                 // Si c'est une lettre ou backspace, on ignore ou on avance
+                 moveFocusAfterInput(gameState.activeCell); 
+                 return;
+             }
+        }
+
+
             playSound('tap');
             const cur = gameState.activeCell;
             const r = parseInt(cur.dataset.r);
@@ -1514,12 +1580,16 @@
                     let alreadyAnimated = cells.every(c => c.classList.contains('word-completed-marker'));
 
                     if (!alreadyAnimated) {
-                        // Animation visuelle
-                        cells.forEach(c => {
-                            c.classList.add('word-completed'); // L'animation CSS
-                            c.classList.add('word-completed-marker'); // Marqueur pour ne pas rejouer
-                            c.style.background = "#dcfce7"; // Laisser vert clair
-                        });
+                    cells.forEach(c => {
+                        c.classList.add('word-completed');
+                        c.classList.add('correct'); // S'assure qu'elle est verte
+                        c.style.background = "#dcfce7";
+                        
+                        // VERROUILLAGE TOTAL
+                        c.readOnly = true; 
+                        // On empêche même le clic si on veut être strict, 
+                        // mais c'est mieux de laisser le clic pour naviguer
+                    });
 
                         // Barrer la définition
                         const defEl = document.getElementById(`def-${w.num}-${w.dir}`);
